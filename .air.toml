@@ -1,0 +1,5 @@
+root = "."
+
+[build]
+  bin = "main"
+  cmd = "go build -buildvcs=false -o main ./cmd/sunready"
