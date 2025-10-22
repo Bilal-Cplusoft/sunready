@@ -159,6 +159,12 @@ definitions:
         example: "94102"
         type: string
     type: object
+  handler.UpdateCustomerStatusRequest:
+    properties:
+      status:
+        example: qualified
+        type: string
+    type: object
   models.Customer:
     properties:
       address:
@@ -381,7 +387,7 @@ info:
   contact:
     email: support@sunready.com
     name: API Support
-  description: API for Sun Ready project management system
+  description: API for Sun Ready project
   license:
     name: Sun Ready Private License
     url: INTERNAL
@@ -651,9 +657,7 @@ paths:
         name: status
         required: true
         schema:
-          additionalProperties:
-            type: string
-          type: object
+          $ref: '#/definitions/handler.UpdateCustomerStatusRequest'
       produces:
       - application/json
       responses:
@@ -867,21 +871,15 @@ paths:
         "200":
           description: OTP sent successfully
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
         "400":
           description: Missing or invalid phone parameter
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
         "500":
           description: Failed to send OTP
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            type: string
       summary: Send OTP to a phone number
       tags:
       - OTP

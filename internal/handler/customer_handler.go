@@ -20,7 +20,7 @@ func NewCustomerHandler(customerService *service.CustomerService) *CustomerHandl
 	}
 }
 
-// CreateCustomerRequest represents the request body for creating a customer
+
 type CreateCustomerRequest struct {
 	FirstName              string   `json:"first_name" example:"John"`
 	LastName               string   `json:"last_name" example:"Smith"`
@@ -41,7 +41,11 @@ type CreateCustomerRequest struct {
 	PreferredContactMethod *string  `json:"preferred_contact_method" example:"email"`
 }
 
-// UpdateCustomerRequest represents the request body for updating a customer
+type UpdateCustomerStatusRequest struct {
+	Status string `json:"status" example:"qualified"`
+}
+
+
 type UpdateCustomerRequest struct {
 	FirstName              *string  `json:"first_name" example:"John"`
 	LastName               *string  `json:"last_name" example:"Smith"`
@@ -179,7 +183,6 @@ func (h *CustomerHandler) UpdateCustomer(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	// Update only provided fields
 	if req.FirstName != nil {
 		customer.FirstName = *req.FirstName
 	}
@@ -284,13 +287,13 @@ func (h *CustomerHandler) DeleteCustomer(w http.ResponseWriter, r *http.Request)
 func (h *CustomerHandler) ListCustomers(w http.ResponseWriter, r *http.Request) {
 	limit := 50
 	offset := 0
-	
+
 	if limitStr := r.URL.Query().Get("limit"); limitStr != "" {
 		if l, err := strconv.Atoi(limitStr); err == nil && l > 0 {
 			limit = l
 		}
 	}
-	
+
 	if offsetStr := r.URL.Query().Get("offset"); offsetStr != "" {
 		if o, err := strconv.Atoi(offsetStr); err == nil && o >= 0 {
 			offset = o
@@ -327,7 +330,7 @@ func (h *CustomerHandler) ListCustomers(w http.ResponseWriter, r *http.Request) 
 // @Accept       json
 // @Produce      json
 // @Param        id      path      int                    true  "Customer ID"
-// @Param        status  body      map[string]string      true  "Status update"
+// @Param        status  body      UpdateCustomerStatusRequest      true  "Status update"
 // @Success      200     {object}  map[string]string
 // @Failure      400     {object}  map[string]string
 // @Failure      404     {object}  map[string]string
@@ -341,19 +344,18 @@ func (h *CustomerHandler) UpdateCustomerStatus(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	var req map[string]string
+	var req UpdateCustomerStatusRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	status, ok := req["status"]
-	if !ok {
+	if req.Status == "" {
 		http.Error(w, "status is required", http.StatusBadRequest)
 		return
 	}
 
-	if err := h.customerService.UpdateCustomerStatus(r.Context(), id, status); err != nil {
+	if err := h.customerService.UpdateCustomerStatus(r.Context(), id, req.Status); err != nil {
 		http.Error(w, "failed to update customer status: "+err.Error(), http.StatusInternalServerError)
 		return
 	}

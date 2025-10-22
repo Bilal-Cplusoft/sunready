@@ -451,10 +451,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/handler.UpdateCustomerStatusRequest"
                         }
                     }
                 ],
@@ -743,28 +740,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OTP sent successfully",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "type": "string"
                         }
                     },
                     "400": {
                         "description": "Missing or invalid phone parameter",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
                         "description": "Failed to send OTP",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "type": "string"
                         }
                     }
                 }
@@ -1092,6 +1080,15 @@ const docTemplate = `{
                 "zip_code": {
                     "type": "string",
                     "example": "94102"
+                }
+            }
+        },
+        "handler.UpdateCustomerStatusRequest": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "example": "qualified"
                 }
             }
         },
@@ -1423,7 +1420,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "Sun Ready API",
-	Description:      "API for Sun Ready project management system",
+	Description:      "API for Sun Ready project",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

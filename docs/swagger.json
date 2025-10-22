@@ -1,7 +1,7 @@
 {
     "swagger": "2.0",
     "info": {
-        "description": "API for Sun Ready project management system",
+        "description": "API for Sun Ready project",
         "title": "Sun Ready API",
         "termsOfService": "http://swagger.io/terms/",
         "contact": {
@@ -444,10 +444,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/handler.UpdateCustomerStatusRequest"
                         }
                     }
                 ],
@@ -736,28 +733,19 @@
                     "200": {
                         "description": "OTP sent successfully",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "type": "string"
                         }
                     },
                     "400": {
                         "description": "Missing or invalid phone parameter",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "type": "string"
                         }
                     },
                     "500": {
                         "description": "Failed to send OTP",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "type": "string"
                         }
                     }
                 }
@@ -1085,6 +1073,15 @@
                 "zip_code": {
                     "type": "string",
                     "example": "94102"
+                }
+            }
+        },
+        "handler.UpdateCustomerStatusRequest": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "example": "qualified"
                 }
             }
         },

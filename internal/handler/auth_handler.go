@@ -52,13 +52,11 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
-
 	user, err := h.authService.Register(r.Context(), req.Email, req.Password, req.FirstName, req.LastName,  req.Address, req.Phone)
 	if err != nil {
 		respondError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-
 	token, err := h.authService.GenerateToken(user.ID)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, "Failed to generate token")
