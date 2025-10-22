@@ -1023,10 +1023,6 @@ const docTemplate = `{
                 "phone": {
                     "type": "string",
                     "example": "555-123-4567"
-                },
-                "user_type": {
-                    "type": "integer",
-                    "example": 5
                 }
             }
         },
@@ -1141,7 +1137,6 @@ const docTemplate = `{
                     "example": "Smith"
                 },
                 "lead_source": {
-                    "description": "Lead source tracking",
                     "type": "string",
                     "example": "website"
                 },
@@ -1158,7 +1153,6 @@ const docTemplate = `{
                     "example": "email"
                 },
                 "property_type": {
-                    "description": "Solar-specific customer fields",
                     "type": "string",
                     "example": "single_family"
                 },
@@ -1175,7 +1169,6 @@ const docTemplate = `{
                     "example": "CA"
                 },
                 "status": {
-                    "description": "Customer journey tracking",
                     "type": "string",
                     "example": "prospect"
                 },

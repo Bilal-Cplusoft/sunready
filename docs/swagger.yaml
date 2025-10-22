@@ -107,9 +107,6 @@ definitions:
       phone:
         example: 555-123-4567
         type: string
-      user_type:
-        example: 5
-        type: integer
     type: object
   handler.UpdateCustomerRequest:
     properties:
@@ -193,7 +190,6 @@ definitions:
         example: Smith
         type: string
       lead_source:
-        description: Lead source tracking
         example: website
         type: string
       notes:
@@ -206,7 +202,6 @@ definitions:
         example: email
         type: string
       property_type:
-        description: Solar-specific customer fields
         example: single_family
         type: string
       referral_code:
@@ -219,7 +214,6 @@ definitions:
         example: CA
         type: string
       status:
-        description: Customer journey tracking
         example: prospect
         type: string
       updated_at:

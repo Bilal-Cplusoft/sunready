@@ -29,7 +29,7 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-func (s *AuthService) Register(ctx context.Context, email, password, firstName, lastName string, userType int16, address, phoneNumber string) (*models.User, error) {
+func (s *AuthService) Register(ctx context.Context, email, password, firstName, lastName string, address, phoneNumber string) (*models.User, error) {
 	existingUser, _ := s.userRepo.GetByEmail(ctx, email)
 	if existingUser != nil {
 		return nil, errors.New("user already exists")
@@ -44,10 +44,6 @@ func (s *AuthService) Register(ctx context.Context, email, password, firstName, 
 		Password:    &hashedStr,
 		FirstName:   &firstName,
 		LastName:    &lastName,
-		CompanyID:   nil, // No company by default in B2C
-		Type:        userType,
-		Disabled:    false,
-		IsManager:   false,
 		Address:     &address,
 		PhoneNumber: &phoneNumber,
 	}
@@ -63,9 +59,6 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (string
 		return "", nil, errors.New("invalid credentials")
 	}
 
-	if user.Disabled {
-		return "", nil, errors.New("user account is disabled")
-	}
 
 	if user.Password == nil {
 		return "", nil, errors.New("invalid credentials")
@@ -75,7 +68,7 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (string
 		return "", nil, errors.New("invalid credentials")
 	}
 
-	token, err := s.GenerateToken(user.ID, user.CompanyID)
+	token, err := s.GenerateToken(user.ID)
 	if err != nil {
 		return "", nil, err
 	}
@@ -83,10 +76,9 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (string
 	return token, user, nil
 }
 
-func (s *AuthService) GenerateToken(userID int, companyID *int) (string, error) {
+func (s *AuthService) GenerateToken(userID int) (string, error) {
 	claims := &Claims{
 		UserID:    userID,
-		CompanyID: companyID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

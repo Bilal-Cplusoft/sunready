@@ -18,19 +18,13 @@ type Customer struct {
 	State       *string   `json:"state" gorm:"column:state" example:"CA"`
 	ZipCode     *string   `json:"zip_code" gorm:"column:zip_code" example:"94102"`
 	IsActive    bool      `json:"is_active" gorm:"column:is_active;default:true" example:"true"`
-	
-	// Solar-specific customer fields
 	PropertyType        *string  `json:"property_type" gorm:"column:property_type" example:"single_family"`
 	RoofType           *string  `json:"roof_type" gorm:"column:roof_type" example:"asphalt_shingle"`
 	HomeOwnershipType  *string  `json:"home_ownership_type" gorm:"column:home_ownership_type" example:"owner"`
 	AverageMonthlyBill *float64 `json:"average_monthly_bill" gorm:"column:average_monthly_bill" example:"150.00"`
 	UtilityProvider    *string  `json:"utility_provider" gorm:"column:utility_provider" example:"PG&E"`
-	
-	// Lead source tracking
 	LeadSource         *string `json:"lead_source" gorm:"column:lead_source" example:"website"`
 	ReferralCode       *string `json:"referral_code" gorm:"column:referral_code" example:"FRIEND2024"`
-	
-	// Customer journey tracking
 	Status             string    `json:"status" gorm:"column:status;default:'prospect'" example:"prospect"`
 	Notes              *string   `json:"notes" gorm:"column:notes" example:"Interested in 10kW system"`
 	PreferredContactMethod *string `json:"preferred_contact_method" gorm:"column:preferred_contact_method" example:"email"`

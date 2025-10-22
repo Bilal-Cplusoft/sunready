@@ -24,7 +24,7 @@ func (s *UserService) Update(ctx context.Context, user *models.User) error {
 }
 
 func (s *UserService) List(ctx context.Context, companyID int, limit, offset int) ([]*models.User, error) {
-	return s.userRepo.List(ctx, companyID, limit, offset)
+	return s.userRepo.List(ctx, limit, offset)
 }
 
 func (s *UserService) Delete(ctx context.Context, id int) error {
@@ -33,12 +33,4 @@ func (s *UserService) Delete(ctx context.Context, id int) error {
 
 func (s *UserService) FindByIDs(ctx context.Context, ids []int) ([]*models.User, error) {
 	return s.userRepo.FindByIDs(ctx, ids)
-}
-
-func (s *UserService) GetDescendantIDs(ctx context.Context, userID int) ([]int, error) {
-	return s.userRepo.GetDescendantIDs(ctx, userID)
-}
-
-func (s *UserService) UpdateCompanyID(ctx context.Context, userID, companyID int) error {
-	return s.userRepo.UpdateCompanyID(ctx, userID, companyID)
 }

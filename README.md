@@ -34,7 +34,7 @@ sunready/
 - **Containerization**: Docker & Docker Compose
 
 
-## Quick Start with Docker
+## Dev Setup with docker compose
 
 1. **Clone and navigate to the project**:
    ```bash
@@ -48,7 +48,7 @@ sunready/
 
 3. **Check the logs**:
    ```bash
-   docker-compose logs -f api
+   docker logs -f sunready-api
    ```
 
 4. **Test the API**:

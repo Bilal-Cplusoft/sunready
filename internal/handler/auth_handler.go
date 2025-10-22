@@ -23,7 +23,6 @@ type RegisterRequest struct {
 	LastName  string `json:"last_name" example:"Doe"`
 	Address   string `json:"address" example:"123 Main St, Anytown, USA"`
 	Phone     string `json:"phone" example:"555-123-4567"`
-	UserType  *int16 `json:"user_type,omitempty" example:"5"`
 }
 
 type LoginRequest struct {
@@ -53,21 +52,14 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
-	userType := int16(5) // Default to customer type
-	if req.UserType != nil {
-		userType = *req.UserType
-	}
-	user, err := h.authService.Register(r.Context(), req.Email, req.Password, req.FirstName, req.LastName, userType, req.Address, req.Phone)
+
+	user, err := h.authService.Register(r.Context(), req.Email, req.Password, req.FirstName, req.LastName,  req.Address, req.Phone)
 	if err != nil {
 		respondError(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	var companyID *int
-	if user.CompanyID != nil {
-		companyID = user.CompanyID
-	}
-	token, err := h.authService.GenerateToken(user.ID, companyID)
+	token, err := h.authService.GenerateToken(user.ID)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, "Failed to generate token")
 		return
