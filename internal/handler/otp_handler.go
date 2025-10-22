@@ -24,9 +24,9 @@ func NewOtpHandler(twilioClient *client.TwilioClient) *OtpHandler {
 // @Accept       json
 // @Produce      json
 // @Param        phone   query     string  true  "Phone number with country code (e.g. +923001234567)"
-// @Success      200     {object}  map[string]string  "OTP sent successfully"
-// @Failure      400     {object}  map[string]string  "Missing or invalid phone parameter"
-// @Failure      500     {object}  map[string]string  "Failed to send OTP"
+// @Success 200 {string} string "OTP sent successfully"
+// @Failure 400 {string} string "Missing or invalid phone parameter"
+// @Failure 500 {string} string "Failed to send OTP"
 // @Router       /api/otp/send [get]
 func (h *OtpHandler) SendOTP(w http.ResponseWriter, r *http.Request) {
 	phone := r.URL.Query().Get("phone")

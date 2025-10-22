@@ -20,7 +20,7 @@ import (
 
 // @title Sun Ready API
 // @version 1.0
-// @description API for Sun Ready project management system
+// @description API for Sun Ready project
 // @termsOfService http://swagger.io/terms/
 
 // @contact.name API Support
