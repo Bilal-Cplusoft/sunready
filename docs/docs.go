@@ -115,40 +115,41 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/companies": {
+        "/api/customers": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Get a list of all companies with optional filtering",
+                "description": "Retrieves a list of customers with optional pagination and filtering",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "companies"
+                    "customers"
                 ],
-                "summary": "List all companies",
+                "summary": "List customers",
                 "parameters": [
                     {
                         "type": "integer",
-                        "default": 10,
-                        "description": "Limit",
+                        "default": 50,
+                        "description": "Limit number of results",
                         "name": "limit",
                         "in": "query"
                     },
                     {
                         "type": "integer",
                         "default": 0,
-                        "description": "Offset",
+                        "description": "Offset for pagination",
                         "name": "offset",
                         "in": "query"
                     },
                     {
-                        "type": "integer",
-                        "description": "Filter by referred by user ID",
-                        "name": "referred_by_user_id",
+                        "type": "string",
+                        "description": "Filter by status",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search customers by name, email, or address",
+                        "name": "search",
                         "in": "query"
                     }
                 ],
@@ -156,24 +157,34 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.CompaniesResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Customer"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
             },
             "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Create a new company with the provided details",
+                "description": "Creates a new customer in the system",
                 "consumes": [
                     "application/json"
                 ],
@@ -181,17 +192,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "companies"
+                    "customers"
                 ],
-                "summary": "Create a new company",
+                "summary": "Create a new customer",
                 "parameters": [
                     {
-                        "description": "Company details",
-                        "name": "request",
+                        "description": "Customer data",
+                        "name": "customer",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.CreateCompanyRequest"
+                            "$ref": "#/definitions/handler.CreateCustomerRequest"
                         }
                     }
                 ],
@@ -199,179 +210,73 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/handler.CompanyResponse"
+                            "$ref": "#/definitions/models.Customer"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
             }
         },
-        "/api/companies/add": {
-            "post": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Creates a new company and migrates the main user and their descendants to it",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "companies"
-                ],
-                "summary": "Add company with user migration",
-                "parameters": [
-                    {
-                        "description": "Company and user details",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handler.AddCompanyRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/handler.CompanyResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/companies/all": {
+        "/api/customers/stats": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Get all companies without pagination with optional filtering",
+                "description": "Retrieves customer statistics by status",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "companies"
+                    "customers"
                 ],
-                "summary": "Get all companies",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Filter by referred by user ID",
-                        "name": "referred_by_user_id",
-                        "in": "query"
-                    }
-                ],
+                "summary": "Get customer statistics",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.CompaniesResponse"
+                            "$ref": "#/definitions/service.CustomerStats"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
             }
         },
-        "/api/companies/slug/{slug}": {
+        "/api/customers/{id}": {
             "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Get a company by its slug",
+                "description": "Retrieves a customer by their ID",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "companies"
+                    "customers"
                 ],
-                "summary": "Get company by slug",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Company Slug",
-                        "name": "slug",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/handler.CompanyResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/api/companies/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Get a company by its ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "companies"
-                ],
-                "summary": "Get company by ID",
+                "summary": "Get customer by ID",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Company ID",
+                        "description": "Customer ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -381,30 +286,31 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.CompanyResponse"
+                            "$ref": "#/definitions/models.Customer"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
             },
             "put": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Update a company's details",
+                "description": "Updates an existing customer",
                 "consumes": [
                     "application/json"
                 ],
@@ -412,24 +318,24 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "companies"
+                    "customers"
                 ],
-                "summary": "Update company",
+                "summary": "Update customer",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Company ID",
+                        "description": "Customer ID",
                         "name": "id",
                         "in": "path",
                         "required": true
                     },
                     {
-                        "description": "Company update details",
-                        "name": "request",
+                        "description": "Updated customer data",
+                        "name": "customer",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/handler.UpdateCompanyRequest"
+                            "$ref": "#/definitions/handler.UpdateCustomerRequest"
                         }
                     }
                 ],
@@ -437,50 +343,119 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/handler.CompanyResponse"
+                            "$ref": "#/definitions/models.Customer"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     },
                     "404": {
                         "description": "Not Found",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
             },
             "delete": {
-                "security": [
+                "description": "Deletes a customer by ID",
+                "tags": [
+                    "customers"
+                ],
+                "summary": "Delete customer",
+                "parameters": [
                     {
-                        "BearerAuth": []
+                        "type": "integer",
+                        "description": "Customer ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
                     }
                 ],
-                "description": "Delete a company by ID",
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/customers/{id}/status": {
+            "patch": {
+                "description": "Updates the status of a customer",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "companies"
+                    "customers"
                 ],
-                "summary": "Delete company",
+                "summary": "Update customer status",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Company ID",
+                        "description": "Customer ID",
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "description": "Status update",
+                        "name": "status",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
                     }
                 ],
                 "responses": {
@@ -489,20 +464,35 @@ const docTemplate = `{
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
-                                "type": "boolean"
+                                "type": "string"
                             }
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/handler.ErrorResponse"
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
@@ -521,20 +511,14 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Filter by company ID",
-                        "name": "company_id",
+                        "description": "Filter by customer ID",
+                        "name": "customer_id",
                         "in": "query"
                     },
                     {
                         "type": "integer",
                         "description": "Filter by creator ID",
                         "name": "creator_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "boolean",
-                        "description": "Filter leads with 3D models",
-                        "name": "has_3d_model",
                         "in": "query"
                     },
                     {
@@ -891,19 +875,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "handler.AddCompanyRequest": {
-            "type": "object",
-            "properties": {
-                "company_name": {
-                    "type": "string",
-                    "example": "New Solar Company"
-                },
-                "main_user_id": {
-                    "type": "integer",
-                    "example": 1
-                }
-            }
-        },
         "handler.AuthResponse": {
             "type": "object",
             "properties": {
@@ -914,70 +885,76 @@ const docTemplate = `{
                 "user": {}
             }
         },
-        "handler.CompaniesResponse": {
+        "handler.CreateCustomerRequest": {
             "type": "object",
             "properties": {
-                "companies": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Company"
-                    }
+                "address": {
+                    "type": "string",
+                    "example": "123 Main St, San Francisco, CA 94102"
                 },
-                "total": {
-                    "type": "integer"
-                }
-            }
-        },
-        "handler.CompanyResponse": {
-            "type": "object",
-            "properties": {
-                "company": {
-                    "$ref": "#/definitions/models.Company"
-                }
-            }
-        },
-        "handler.CreateCompanyRequest": {
-            "type": "object",
-            "properties": {
-                "baseline_adder": {
+                "average_monthly_bill": {
                     "type": "number",
-                    "example": 100
+                    "example": 150
                 },
-                "code": {
+                "city": {
                     "type": "string",
-                    "example": "ACME"
+                    "example": "San Francisco"
                 },
-                "description": {
+                "email": {
                     "type": "string",
-                    "example": "Leading solar company"
+                    "example": "john.smith@email.com"
                 },
-                "display_name": {
+                "first_name": {
                     "type": "string",
-                    "example": "Acme Corporation"
+                    "example": "John"
                 },
-                "logo_path": {
+                "home_ownership_type": {
                     "type": "string",
-                    "example": "https://example.com/logo.png"
+                    "example": "owner"
                 },
-                "name": {
+                "last_name": {
                     "type": "string",
-                    "example": "Acme Corp"
+                    "example": "Smith"
                 },
-                "sales_commission_default": {
-                    "type": "number",
-                    "example": 0.1
-                },
-                "sales_commission_max": {
-                    "type": "number",
-                    "example": 0.15
-                },
-                "sales_commission_min": {
-                    "type": "number",
-                    "example": 0.05
-                },
-                "slug": {
+                "lead_source": {
                     "type": "string",
-                    "example": "acme-corp"
+                    "example": "website"
+                },
+                "notes": {
+                    "type": "string",
+                    "example": "Interested in 10kW system"
+                },
+                "phone_number": {
+                    "type": "string",
+                    "example": "+1-555-123-4567"
+                },
+                "preferred_contact_method": {
+                    "type": "string",
+                    "example": "email"
+                },
+                "property_type": {
+                    "type": "string",
+                    "example": "single_family"
+                },
+                "referral_code": {
+                    "type": "string",
+                    "example": "FRIEND2024"
+                },
+                "roof_type": {
+                    "type": "string",
+                    "example": "asphalt_shingle"
+                },
+                "state": {
+                    "type": "string",
+                    "example": "CA"
+                },
+                "utility_provider": {
+                    "type": "string",
+                    "example": "PG\u0026E"
+                },
+                "zip_code": {
+                    "type": "string",
+                    "example": "94102"
                 }
             }
         },
@@ -1027,10 +1004,6 @@ const docTemplate = `{
                     "type": "string",
                     "example": "123 Main St, Anytown, USA"
                 },
-                "company_id": {
-                    "type": "integer",
-                    "example": 1
-                },
                 "email": {
                     "type": "string",
                     "example": "user@example.com"
@@ -1050,115 +1023,111 @@ const docTemplate = `{
                 "phone": {
                     "type": "string",
                     "example": "555-123-4567"
+                },
+                "user_type": {
+                    "type": "integer",
+                    "example": 5
                 }
             }
         },
-        "handler.UpdateCompanyRequest": {
+        "handler.UpdateCustomerRequest": {
             "type": "object",
             "properties": {
-                "baseline": {
+                "address": {
+                    "type": "string",
+                    "example": "123 Main St, San Francisco, CA 94102"
+                },
+                "average_monthly_bill": {
                     "type": "number",
-                    "example": 1000
+                    "example": 150
                 },
-                "baseline_adder": {
-                    "type": "number",
-                    "example": 100
-                },
-                "baseline_adder_pct_sales_comms": {
-                    "type": "integer",
-                    "example": 10
-                },
-                "code": {
+                "city": {
                     "type": "string",
-                    "example": "ACME"
+                    "example": "San Francisco"
                 },
-                "contract_tag": {
+                "first_name": {
                     "type": "string",
-                    "example": "STANDARD"
+                    "example": "John"
                 },
-                "description": {
+                "home_ownership_type": {
                     "type": "string",
-                    "example": "Leading solar company"
-                },
-                "display_name": {
-                    "type": "string",
-                    "example": "Acme Corporation"
+                    "example": "owner"
                 },
                 "is_active": {
                     "type": "boolean",
                     "example": true
                 },
-                "logo_path": {
+                "last_name": {
                     "type": "string",
-                    "example": "https://example.com/logo.png"
+                    "example": "Smith"
                 },
-                "name": {
+                "notes": {
                     "type": "string",
-                    "example": "Acme Corp"
+                    "example": "Interested in 10kW system"
                 },
-                "sales_commission_default": {
-                    "type": "number",
-                    "example": 0.1
-                },
-                "sales_commission_max": {
-                    "type": "number",
-                    "example": 0.15
-                },
-                "sales_commission_min": {
-                    "type": "number",
-                    "example": 0.05
-                },
-                "slug": {
+                "phone_number": {
                     "type": "string",
-                    "example": "acme-corp"
+                    "example": "+1-555-123-4567"
+                },
+                "preferred_contact_method": {
+                    "type": "string",
+                    "example": "email"
+                },
+                "property_type": {
+                    "type": "string",
+                    "example": "single_family"
+                },
+                "roof_type": {
+                    "type": "string",
+                    "example": "asphalt_shingle"
+                },
+                "state": {
+                    "type": "string",
+                    "example": "CA"
+                },
+                "status": {
+                    "type": "string",
+                    "example": "prospect"
+                },
+                "utility_provider": {
+                    "type": "string",
+                    "example": "PG\u0026E"
+                },
+                "zip_code": {
+                    "type": "string",
+                    "example": "94102"
                 }
             }
         },
-        "models.Company": {
+        "models.Customer": {
             "type": "object",
             "properties": {
-                "admin_id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "baseline": {
-                    "type": "number",
-                    "example": 1000
-                },
-                "baseline_adder": {
-                    "type": "number",
-                    "example": 100
-                },
-                "baseline_adder_pct_sales_comms": {
-                    "type": "integer",
-                    "example": 10
-                },
-                "code": {
+                "address": {
                     "type": "string",
-                    "example": "ACME"
+                    "example": "123 Main St, San Francisco, CA 94102"
                 },
-                "contract_tag": {
+                "average_monthly_bill": {
+                    "type": "number",
+                    "example": 150
+                },
+                "city": {
                     "type": "string",
-                    "example": "STANDARD"
+                    "example": "San Francisco"
                 },
                 "created_at": {
                     "type": "string"
                 },
-                "credits": {
-                    "type": "integer",
-                    "example": 1000
-                },
-                "custom_commissions": {
-                    "type": "boolean",
-                    "example": false
-                },
-                "description": {
+                "email": {
                     "type": "string",
-                    "example": "Leading solar company"
+                    "example": "john.smith@email.com"
                 },
-                "display_name": {
+                "first_name": {
                     "type": "string",
-                    "example": "Acme Corporation"
+                    "example": "John"
+                },
+                "home_ownership_type": {
+                    "type": "string",
+                    "example": "owner"
                 },
                 "id": {
                     "type": "integer"
@@ -1167,40 +1136,59 @@ const docTemplate = `{
                     "type": "boolean",
                     "example": true
                 },
-                "logo_path": {
+                "last_name": {
                     "type": "string",
-                    "example": "https://example.com/logo.png"
+                    "example": "Smith"
                 },
-                "name": {
+                "lead_source": {
+                    "description": "Lead source tracking",
                     "type": "string",
-                    "example": "Acme Corp"
+                    "example": "website"
                 },
-                "pricing_mode": {
-                    "type": "integer",
-                    "example": 0
-                },
-                "referred_by_user_id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "sales_commission_default": {
-                    "type": "number",
-                    "example": 0.1
-                },
-                "sales_commission_max": {
-                    "type": "number",
-                    "example": 0.15
-                },
-                "sales_commission_min": {
-                    "type": "number",
-                    "example": 0.05
-                },
-                "slug": {
+                "notes": {
                     "type": "string",
-                    "example": "acme-corp"
+                    "example": "Interested in 10kW system"
+                },
+                "phone_number": {
+                    "type": "string",
+                    "example": "+1-555-123-4567"
+                },
+                "preferred_contact_method": {
+                    "type": "string",
+                    "example": "email"
+                },
+                "property_type": {
+                    "description": "Solar-specific customer fields",
+                    "type": "string",
+                    "example": "single_family"
+                },
+                "referral_code": {
+                    "type": "string",
+                    "example": "FRIEND2024"
+                },
+                "roof_type": {
+                    "type": "string",
+                    "example": "asphalt_shingle"
+                },
+                "state": {
+                    "type": "string",
+                    "example": "CA"
+                },
+                "status": {
+                    "description": "Customer journey tracking",
+                    "type": "string",
+                    "example": "prospect"
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "utility_provider": {
+                    "type": "string",
+                    "example": "PG\u0026E"
+                },
+                "zip_code": {
+                    "type": "string",
+                    "example": "94102"
                 }
             }
         },
@@ -1214,10 +1202,6 @@ const docTemplate = `{
                 "city": {
                     "type": "string"
                 },
-                "company_id": {
-                    "type": "integer",
-                    "example": 1
-                },
                 "consumption": {
                     "type": "array",
                     "items": {
@@ -1225,6 +1209,10 @@ const docTemplate = `{
                     }
                 },
                 "creator_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "customer_id": {
                     "type": "integer",
                     "example": 1
                 },
@@ -1286,6 +1274,35 @@ const docTemplate = `{
                 },
                 "zip": {
                     "type": "string"
+                }
+            }
+        },
+        "service.CustomerStats": {
+            "type": "object",
+            "properties": {
+                "cancelled": {
+                    "type": "integer"
+                },
+                "completed": {
+                    "type": "integer"
+                },
+                "contracts": {
+                    "type": "integer"
+                },
+                "installations": {
+                    "type": "integer"
+                },
+                "proposals": {
+                    "type": "integer"
+                },
+                "prospects": {
+                    "type": "integer"
+                },
+                "qualified": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },

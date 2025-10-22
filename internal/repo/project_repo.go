@@ -36,10 +36,10 @@ func (r *ProjectRepo) Delete(ctx context.Context, id int) error {
 	return r.db.WithContext(ctx).Delete(&models.Project{}, id).Error
 }
 
-func (r *ProjectRepo) ListByCompany(ctx context.Context, companyID int, limit, offset int) ([]*models.Project, error) {
+func (r *ProjectRepo) ListByCustomer(ctx context.Context, customerID int, limit, offset int) ([]*models.Project, error) {
 	var projects []*models.Project
 	err := r.db.WithContext(ctx).
-		Where("company_id = ?", companyID).
+		Where("customer_id = ?", customerID).
 		Order("created_at DESC").
 		Limit(limit).
 		Offset(offset).

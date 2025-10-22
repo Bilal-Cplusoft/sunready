@@ -31,8 +31,8 @@ func (s *ProjectService) Delete(ctx context.Context, id int) error {
 	return s.projectRepo.Delete(ctx, id)
 }
 
-func (s *ProjectService) ListByCompany(ctx context.Context, companyID int, limit, offset int) ([]*models.Project, error) {
-	return s.projectRepo.ListByCompany(ctx, companyID, limit, offset)
+func (s *ProjectService) ListByCustomer(ctx context.Context, customerID int, limit, offset int) ([]*models.Project, error) {
+	return s.projectRepo.ListByCustomer(ctx, customerID, limit, offset)
 }
 
 func (s *ProjectService) ListByUser(ctx context.Context, userID int, limit, offset int) ([]*models.Project, error) {

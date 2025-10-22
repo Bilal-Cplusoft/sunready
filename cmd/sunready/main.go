@@ -55,7 +55,7 @@ func main() {
 	}
 
 	userRepo := repo.NewUserRepo(db)
-	companyRepo := repo.NewCompanyRepo(db)
+	customerRepo := repo.NewCustomerRepo(db)
 	projectRepo := repo.NewProjectRepo(db)
 	quoteRepo := repo.NewQuoteRepo(db)
 	leadRepo := repo.NewLeadRepo(db)
@@ -65,13 +65,13 @@ func main() {
 
 	authService := service.NewAuthService(userRepo, jwtSecret)
 	userService := service.NewUserService(userRepo)
-	companyService := service.NewCompanyService(companyRepo)
+	customerService := service.NewCustomerService(customerRepo)
 	projectService := service.NewProjectService(projectRepo)
 	quoteService := service.NewQuoteService(quoteRepo)
 	leadService := service.NewLeadService(leadRepo,houseRepo)
 	authHandler := handler.NewAuthHandler(authService,sendGridClient)
 	userHandler := handler.NewUserHandler(userService)
-	companyHandler := handler.NewCompanyHandler(companyService, userService)
+	customerHandler := handler.NewCustomerHandler(customerService)
 	projectHandler := handler.NewProjectHandler(projectService)
 	quoteHandler := handler.NewQuoteHandler(quoteService)
 	leadHandler := handler.NewLeadHandler(leadRepo,leadService,userRepo)
@@ -102,20 +102,19 @@ func main() {
 	r.Delete("/api/users/{id}", userHandler.Delete)
 	r.Get("/api/users", userHandler.List)
 
-	r.Post("/api/companies", companyHandler.Create)
-	r.Post("/api/companies/add", companyHandler.AddCompany)
-	r.Get("/api/companies/all", companyHandler.FindAll)
-	r.Get("/api/companies/slug/{slug}", companyHandler.GetBySlug)
-	r.Get("/api/companies/{id}", companyHandler.GetByID)
-	r.Put("/api/companies/{id}", companyHandler.Update)
-	r.Delete("/api/companies/{id}", companyHandler.Delete)
-	r.Get("/api/companies", companyHandler.List)
+	r.Post("/api/customers", customerHandler.CreateCustomer)
+	r.Get("/api/customers/stats", customerHandler.GetCustomerStats)
+	r.Get("/api/customers/{id}", customerHandler.GetCustomer)
+	r.Put("/api/customers/{id}", customerHandler.UpdateCustomer)
+	r.Delete("/api/customers/{id}", customerHandler.DeleteCustomer)
+	r.Patch("/api/customers/{id}/status", customerHandler.UpdateCustomerStatus)
+	r.Get("/api/customers", customerHandler.ListCustomers)
 
 	r.Post("/api/projects", projectHandler.Create)
 	r.Get("/api/projects/{id}", projectHandler.GetByID)
 	r.Put("/api/projects/{id}", projectHandler.Update)
 	r.Delete("/api/projects/{id}", projectHandler.Delete)
-	r.Get("/api/projects", projectHandler.ListByCompany)
+	r.Get("/api/projects", projectHandler.ListByCustomer)
 	r.Get("/api/projects/user", projectHandler.ListByUser)
 
 
@@ -140,7 +139,7 @@ func main() {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 		w.Write([]byte(`{
-			"status": "ready",
+			"status": "ok",
 			"project_name": "SunReady",
 			"version": "v1.0.0"
 		}`))

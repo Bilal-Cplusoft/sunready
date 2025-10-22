@@ -9,6 +9,7 @@ dist/
 
 # Project-specific binaries
 main
+api
 
 # Test binary, built with `go test -c`
 *.test

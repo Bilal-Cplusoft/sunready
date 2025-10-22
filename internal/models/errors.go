@@ -26,6 +26,14 @@ ErrInvalidProposalCode = errors.New("proposal code is required")
 ErrInvalidProposalCost = errors.New("system cost must be greater than or equal to 0")
 ErrProposalNotFound    = errors.New("proposal not found")
 
+// Customer errors
+ErrInvalidCustomerFirstName = errors.New("customer first name must be between 1 and 100 characters")
+ErrInvalidCustomerLastName  = errors.New("customer last name must be between 1 and 100 characters")
+ErrInvalidCustomerEmail     = errors.New("customer email must be between 1 and 255 characters")
+ErrInvalidCustomerAddress   = errors.New("customer address must be between 1 and 500 characters")
+ErrInvalidCustomerStatus    = errors.New("invalid customer status")
+ErrCustomerNotFound         = errors.New("customer not found")
+
 // Model3D errors
 ErrInvalidModel3DLeadID      = errors.New("3D model must be associated with a valid lead")
 ErrInvalidModel3DProjectID   = errors.New("3D model must have a valid LightFusion project ID")

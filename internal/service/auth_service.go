@@ -24,12 +24,12 @@ func NewAuthService(userRepo *repo.UserRepo, jwtSecret string) *AuthService {
 }
 
 type Claims struct {
-	UserID    int `json:"user_id"`
-	CompanyID int `json:"company_id"`
+	UserID    int  `json:"user_id"`
+	CompanyID *int `json:"company_id,omitempty"`
 	jwt.RegisteredClaims
 }
 
-func (s *AuthService) Register(ctx context.Context, email, password, firstName, lastName string, companyID int, address, phoneNumber string) (*models.User, error) {
+func (s *AuthService) Register(ctx context.Context, email, password, firstName, lastName string, userType int16, address, phoneNumber string) (*models.User, error) {
 	existingUser, _ := s.userRepo.GetByEmail(ctx, email)
 	if existingUser != nil {
 		return nil, errors.New("user already exists")
@@ -40,15 +40,15 @@ func (s *AuthService) Register(ctx context.Context, email, password, firstName, 
 	}
 	hashedStr := string(hashedPassword)
 	user := &models.User{
-		Email:     email,
-		Password:  &hashedStr,
-		FirstName: &firstName,
-		LastName:  &lastName,
-		CompanyID: companyID,
-		Type:      int16(models.UserTypeSales),
-		Disabled:  false,
-		IsManager: false,
-		Address:   &address,
+		Email:       email,
+		Password:    &hashedStr,
+		FirstName:   &firstName,
+		LastName:    &lastName,
+		CompanyID:   nil, // No company by default in B2C
+		Type:        userType,
+		Disabled:    false,
+		IsManager:   false,
+		Address:     &address,
 		PhoneNumber: &phoneNumber,
 	}
 	if err := s.userRepo.Create(ctx, user); err != nil {
@@ -83,7 +83,7 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (string
 	return token, user, nil
 }
 
-func (s *AuthService) GenerateToken(userID, companyID int) (string, error) {
+func (s *AuthService) GenerateToken(userID int, companyID *int) (string, error) {
 	claims := &Claims{
 		UserID:    userID,
 		CompanyID: companyID,

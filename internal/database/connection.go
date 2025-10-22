@@ -32,10 +32,10 @@ func runMigrations(db *gorm.DB) error {
 	log.Println("Running database migrations...")
 
 	tables := []struct {
-		model interface{}
+		model any
 		name  string
 	}{
-		{&models.Company{}, "companies"},
+		{&models.Customer{}, "customers"},
 		{&models.User{}, "users"},
 		{&models.Project{}, "projects"},
 		{&models.Lead{}, "leads"},

@@ -47,7 +47,7 @@ func GetUserID(ctx context.Context) (int, bool) {
 	return userID, ok
 }
 
-func GetCompanyID(ctx context.Context) (int, bool) {
-	companyID, ok := ctx.Value(CompanyIDKey).(int)
+func GetCompanyID(ctx context.Context) (*int, bool) {
+	companyID, ok := ctx.Value(CompanyIDKey).(*int)
 	return companyID, ok
 }

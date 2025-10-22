@@ -50,15 +50,12 @@ func (h *LeadHandler) CreateLead(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "User ID missing from context", http.StatusUnauthorized)
 		return
     }
-    companyID, _ := middleware.GetCompanyID(r.Context())
-    user,_ := h.userRepo.GetByID(r.Context(),userID)
-
-    effectiveCompanyID, err := h.userRepo.GetEffectiveCompanyID(r.Context(), user, companyID)
-	if err != nil {
-		respondError(w, http.StatusForbidden, err.Error())
+    if req.CustomerID == 0 {
+		respondError(w, http.StatusBadRequest, "Customer ID is required")
 		return
 	}
-	response, err := h.leadService.CreateLead(r.Context(), req, userID, effectiveCompanyID)
+
+	response, err := h.leadService.CreateLead(r.Context(), req, userID, req.CustomerID)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -107,21 +104,21 @@ func (h *LeadHandler) GetLead(w http.ResponseWriter, r *http.Request) {
 // @Description Retrieves a paginated list of leads
 // @Tags leads
 // @Produce json
-// @Param company_id query int false "Filter by company ID"
+// @Param customer_id query int false "Filter by customer ID"
 // @Param creator_id query int false "Filter by creator ID"
-// @Param has_3d_model query bool false "Filter leads with 3D models"
 // @Param limit query int false "Number of items per page" default(20)
 // @Param offset query int false "Number of items to skip" default(0)
 // @Success 200 {object} map[string]interface{}
 // @Router /api/leads [get]
 func (h *LeadHandler) ListLeads(w http.ResponseWriter, r *http.Request) {
-	var companyID, creatorID *int
+	var creatorID *int
 	limit := 20
 	offset := 0
 
-	if companyIDStr := r.URL.Query().Get("company_id"); companyIDStr != "" {
-		if id, err := strconv.Atoi(companyIDStr); err == nil {
-			companyID = &id
+	var customerID *int
+	if customerIDStr := r.URL.Query().Get("customer_id"); customerIDStr != "" {
+		if id, err := strconv.Atoi(customerIDStr); err == nil {
+			customerID = &id
 		}
 	}
 
@@ -148,7 +145,7 @@ func (h *LeadHandler) ListLeads(w http.ResponseWriter, r *http.Request) {
 	var total int64
 	var err error
 
-	leads, total, err = h.leadRepo.List(r.Context(), companyID, creatorID, limit, offset)
+	leads, total, err = h.leadRepo.List(r.Context(), customerID, creatorID, limit, offset)
 	if err != nil {
 		log.Printf("Failed to list leads: %v", err)
 		respondError(w, http.StatusInternalServerError, "Failed to list leads")

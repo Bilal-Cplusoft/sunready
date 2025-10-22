@@ -89,11 +89,11 @@ func (h *ProjectHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func (h *ProjectHandler) ListByCompany(w http.ResponseWriter, r *http.Request) {
-	companyIDStr := r.URL.Query().Get("company_id")
-	companyID, err := strconv.Atoi(companyIDStr)
+func (h *ProjectHandler) ListByCustomer(w http.ResponseWriter, r *http.Request) {
+	customerIDStr := r.URL.Query().Get("customer_id")
+	customerID, err := strconv.Atoi(customerIDStr)
 	if err != nil {
-		respondError(w, http.StatusBadRequest, "Invalid company ID")
+		respondError(w, http.StatusBadRequest, "Invalid customer ID")
 		return
 	}
 
@@ -103,7 +103,7 @@ func (h *ProjectHandler) ListByCompany(w http.ResponseWriter, r *http.Request) {
 	}
 	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
 
-	projects, err := h.projectService.ListByCompany(r.Context(), companyID, limit, offset)
+	projects, err := h.projectService.ListByCustomer(r.Context(), customerID, limit, offset)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, "Failed to fetch projects")
 		return

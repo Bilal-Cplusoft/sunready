@@ -15,7 +15,7 @@ type User struct {
 	Type        int16     `json:"type" gorm:"column:type"`
 	PhoneNumber *string   `json:"phone_number" gorm:"column:phone_number"`
 	Address     *string   `json:"address" gorm:"column:address"`
-	CompanyID   int       `json:"company_id" gorm:"column:company_id"`
+	CompanyID   *int      `json:"company_id" gorm:"column:company_id"`
 	CreatorID   *int      `json:"creator_id" gorm:"column:creator_id"`
 	PicturePath *string   `json:"picture_path" gorm:"column:picture_path"`
 	Disabled    bool      `json:"disabled" gorm:"column:disabled;default:false"`
@@ -29,8 +29,10 @@ func (User) TableName() string {
 type UserType int16
 
 const (
-	UserTypeUnknown UserType = 0
-	UserTypeAdmin   UserType = 1
-	UserTypeSales   UserType = 2
-	UserTypeClient  UserType = 3
+	UserTypeUnknown   UserType = 0
+	UserTypeAdmin     UserType = 1
+	UserTypeSales     UserType = 2
+	UserTypeSupport   UserType = 3
+	UserTypeInstaller UserType = 4
+	UserTypeCustomer  UserType = 5
 )

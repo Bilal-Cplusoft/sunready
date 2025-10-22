@@ -92,9 +92,9 @@ func (r *UserRepo) UpdateCompanyID(ctx context.Context, userID, companyID int) e
 		Update("company_id", companyID).Error
 }
 
-func (r *UserRepo) GetEffectiveCompanyID(ctx context.Context, user *models.User, companyID int) (int, error) {
+func (r *UserRepo) GetEffectiveCompanyID(ctx context.Context, user *models.User, companyID *int) (*int, error) {
 	baseCompanyID := user.CompanyID
-	if companyID == 0 {
+	if companyID == nil || *companyID == 0 {
 		return baseCompanyID, nil
 	}
 	if user.Type == int16(models.UserTypeAdmin) || user.IsManager {
