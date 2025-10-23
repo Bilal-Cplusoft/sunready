@@ -87,7 +87,6 @@ func (sg *SendGridClient) SendOTP(toEmail string) (string,error) {
 	if response.StatusCode >= 400 {
 		return "", fmt.Errorf("failed to send OTP email, status code: %d, body: %s", response.StatusCode, response.Body)
 	}
-
-	fmt.Printf("OTP email sent to %s successfully\n", toEmail)
+	fmt.Printf("OTP email sent to %s: %v \n", toEmail,otp)
 	return otp, nil
 }
