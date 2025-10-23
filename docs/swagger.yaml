@@ -87,6 +87,11 @@ definitions:
         example: password123
         type: string
     type: object
+  handler.MessageResponse:
+    properties:
+      message:
+        type: string
+    type: object
   handler.RegisterRequest:
     properties:
       address:
@@ -865,6 +870,11 @@ paths:
         name: phone
         required: true
         type: string
+      - description: Email Address (e.g. test@example.com)
+        in: query
+        name: email
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -887,7 +897,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Verifies a one-time password (OTP) sent to a phone number.
+      description: Verifies one-time passwords (OTPs) sent to both phone and email.
       parameters:
       - description: Phone number with country code (e.g. +923001234567)
         in: query
@@ -896,7 +906,17 @@ paths:
         type: string
       - description: OTP code received via SMS
         in: query
-        name: otp
+        name: sms_otp
+        required: true
+        type: string
+      - description: Email address used for OTP verification
+        in: query
+        name: email
+        required: true
+        type: string
+      - description: OTP code received via Email
+        in: query
+        name: email_otp
         required: true
         type: string
       produces:
@@ -905,16 +925,12 @@ paths:
         "200":
           description: OTP verified successfully
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/handler.MessageResponse'
         "400":
           description: Missing or invalid parameters / OTP verification failed
           schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Verify an OTP code
+            $ref: '#/definitions/handler.MessageResponse'
+      summary: Verify phone and email OTP codes
       tags:
       - OTP
   /api/quote:

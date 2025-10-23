@@ -8,7 +8,7 @@ help: ## Show this help message
 
 build: ## Build the application binary
 	@echo "Building sunready..."
-	@go build -o sunready ./cmd/sunready
+	@go build -o api ./cmd/sunready
 
 run: ## Run the application locally
 	@echo "Running sunready..."
@@ -20,7 +20,7 @@ test: ## Run tests
 
 clean: ## Clean build artifacts
 	@echo "Cleaning..."
-	@rm -f sunready
+	@rm -f api
 	@go clean
 
 fmt: ## Format code

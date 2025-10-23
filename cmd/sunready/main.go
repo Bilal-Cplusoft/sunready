@@ -75,7 +75,7 @@ func main() {
 	projectHandler := handler.NewProjectHandler(projectService)
 	quoteHandler := handler.NewQuoteHandler(quoteService)
 	leadHandler := handler.NewLeadHandler(leadRepo,leadService,userRepo)
-	otpHandler := handler.NewOtpHandler(twilioClient)
+	otpHandler := handler.NewOtpHandler(twilioClient,sendGridClient)
 
 	r := chi.NewRouter()
 
@@ -132,7 +132,7 @@ func main() {
 	r.Handle("/media/*", fileServer)
 
 	r.Get("/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL("http://localhost:8080/swagger/doc.json"),
+		httpSwagger.URL("/swagger/doc.json"),
 	))
 
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {

@@ -112,25 +112,19 @@ func (s *QuoteService) CalculateQuote(input QuoteInput) (*QuoteResult, error) {
 		monthlyPayment = systemCostBeforeIncentives / numPayments
 	}
 
-	// Calculate current and new electricity costs
 	annualCurrentBill := input.MonthlyElectricBill * 12
 
-	// Calculate offset amount
 	offsetRatio := input.ElectricalOffsetPct / 100.0
 	annualSolarProduction := input.AnnualProductionKWh
 	annualSolarSavings := annualSolarProduction * utilityRate
 
-	// New bill calculation (remaining electricity needed)
 	remainingUsagePct := math.Max(0, 1.0-offsetRatio)
 	newMonthlyBill := input.MonthlyElectricBill * remainingUsagePct
 
-	// Calculate savings
 	monthlySavingsFromSolar := input.MonthlyElectricBill - newMonthlyBill
 	netMonthlySavings := monthlySavingsFromSolar - monthlyPayment
 	annualSavingsFromReducedBill := (input.MonthlyElectricBill - newMonthlyBill) * 12
     firstYearSavings := annualSavingsFromReducedBill - (monthlyPayment * 12)
-
-	// Calculate 25-year savings with utility rate increase
 	twentyFiveYearSavings := 0.0
 	totalUtilityCostWithoutSolar := 0.0
 	totalCostWithSolar := 0.0

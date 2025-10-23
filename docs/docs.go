@@ -734,6 +734,13 @@ const docTemplate = `{
                         "name": "phone",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Email Address (e.g. test@example.com)",
+                        "name": "email",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -760,7 +767,7 @@ const docTemplate = `{
         },
         "/api/otp/verify": {
             "get": {
-                "description": "Verifies a one-time password (OTP) sent to a phone number.",
+                "description": "Verifies one-time passwords (OTPs) sent to both phone and email.",
                 "consumes": [
                     "application/json"
                 ],
@@ -770,7 +777,7 @@ const docTemplate = `{
                 "tags": [
                     "OTP"
                 ],
-                "summary": "Verify an OTP code",
+                "summary": "Verify phone and email OTP codes",
                 "parameters": [
                     {
                         "type": "string",
@@ -782,7 +789,21 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "OTP code received via SMS",
-                        "name": "otp",
+                        "name": "sms_otp",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Email address used for OTP verification",
+                        "name": "email",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "OTP code received via Email",
+                        "name": "email_otp",
                         "in": "query",
                         "required": true
                     }
@@ -791,19 +812,13 @@ const docTemplate = `{
                     "200": {
                         "description": "OTP verified successfully",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/handler.MessageResponse"
                         }
                     },
                     "400": {
                         "description": "Missing or invalid parameters / OTP verification failed",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/handler.MessageResponse"
                         }
                     }
                 }
@@ -982,6 +997,14 @@ const docTemplate = `{
                 "password": {
                     "type": "string",
                     "example": "password123"
+                }
+            }
+        },
+        "handler.MessageResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
                 }
             }
         },
