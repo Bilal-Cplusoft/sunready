@@ -33,9 +33,9 @@ UpdatedAt           time.Time  `json:"updated_at" gorm:"column:updated_at"`
 ExternalLeadID      *int       `json:"external_lead_id" gorm:"column:external_lead_id;uniqueIndex" example:"12345"`
 SyncStatus          string     `json:"sync_status" gorm:"column:sync_status;default:'pending'" example:"synced"`
 LastSyncedAt        *time.Time `json:"last_synced_at" gorm:"column:last_synced_at"`
-	State               int        `json:"state" gorm:"column:state;not null;default:0" example:"0"`
-	CustomerID          int        `json:"customer_id" gorm:"column:customer_id;not null" example:"1"`
-	CreatorID           *int       `json:"creator_id" gorm:"column:creator_id" example:"1"`
+State               int        `json:"state" gorm:"column:state;not null;default:0" example:"0"`
+CustomerID          int        `json:"customer_id" gorm:"column:customer_id;not null" example:"1"`
+CreatorID           *int       `json:"creator_id" gorm:"column:creator_id" example:"1"`
 Latitude            float64    `json:"latitude" gorm:"column:latitude;not null" example:"37.7749"`
 Longitude           float64    `json:"longitude" gorm:"column:longitude;not null" example:"-122.4194"`
 Address             string     `json:"address" gorm:"column:address" example:"123 Solar St, San Francisco, CA 94102"`

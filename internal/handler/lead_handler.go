@@ -54,7 +54,6 @@ func (h *LeadHandler) CreateLead(w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusBadRequest, "Customer ID is required")
 		return
 	}
-
 	response, err := h.leadService.CreateLead(r.Context(), req, userID, req.CustomerID)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, err.Error())
@@ -84,7 +83,6 @@ func (h *LeadHandler) GetLead(w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusBadRequest, "Invalid lead ID")
 		return
 	}
-
 	lead, err := h.leadRepo.GetByID(r.Context(), id)
 	if err != nil {
 		if err == models.ErrLeadNotFound {
@@ -95,7 +93,6 @@ func (h *LeadHandler) GetLead(w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusInternalServerError, "Failed to get lead")
 		return
 	}
-
 	respondJSON(w, http.StatusOK, lead)
 }
 
@@ -114,26 +111,22 @@ func (h *LeadHandler) ListLeads(w http.ResponseWriter, r *http.Request) {
 	var creatorID *int
 	limit := 20
 	offset := 0
-
 	var customerID *int
 	if customerIDStr := r.URL.Query().Get("customer_id"); customerIDStr != "" {
 		if id, err := strconv.Atoi(customerIDStr); err == nil {
 			customerID = &id
 		}
 	}
-
 	if creatorIDStr := r.URL.Query().Get("creator_id"); creatorIDStr != "" {
 		if id, err := strconv.Atoi(creatorIDStr); err == nil {
 			creatorID = &id
 		}
 	}
-
 	if limitStr := r.URL.Query().Get("limit"); limitStr != "" {
 		if l, err := strconv.Atoi(limitStr); err == nil && l > 0 && l <= 100 {
 			limit = l
 		}
 	}
-
 	if offsetStr := r.URL.Query().Get("offset"); offsetStr != "" {
 		if o, err := strconv.Atoi(offsetStr); err == nil && o >= 0 {
 			offset = o

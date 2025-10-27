@@ -23,7 +23,7 @@ func (s *UserService) Update(ctx context.Context, user *models.User) error {
 	return s.userRepo.Update(ctx, user)
 }
 
-func (s *UserService) List(ctx context.Context, companyID int, limit, offset int) ([]*models.User, error) {
+func (s *UserService) List(ctx context.Context,  limit, offset int) ([]*models.User, error) {
 	return s.userRepo.List(ctx, limit, offset)
 }
 

@@ -18,6 +18,18 @@ func NewUserHandler(userService *service.UserService) *UserHandler {
 	return &UserHandler{userService: userService}
 }
 
+
+// GetByID godoc
+// @Summary      Get user by ID
+// @Description  Retrieves a user by their unique ID
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "User ID"
+// @Success      200  {object}  models.User
+// @Failure      400  {object}  map[string]string  "Invalid user ID"
+// @Failure      404  {object}  map[string]string  "User not found"
+// @Router       /api/users/{id} [get]
 func (h *UserHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
@@ -35,6 +47,19 @@ func (h *UserHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, user)
 }
 
+
+// Update godoc
+// @Summary      Update user
+// @Description  Updates an existing user's information
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        id    path      int           true  "User ID"
+// @Param        user  body      models.User   true  "User update payload"
+// @Success      200   {object}  models.User
+// @Failure      400   {object}  map[string]string  "Invalid user ID or request body"
+// @Failure      500   {object}  map[string]string  "Failed to update user"
+// @Router       /api/users/{id} [put]
 func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
@@ -58,13 +83,21 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, user)
 }
 
+
+// List godoc
+// @Summary      List users
+// @Description  Retrieves a paginated list of users for a specific company
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        company_id  query     int  true   "Company ID"
+// @Param        limit       query     int  false  "Limit (default: 20)"
+// @Param        offset      query     int  false  "Offset (default: 0)"
+// @Success      200         {array}   models.User
+// @Failure      400         {object}  map[string]string  "Invalid company ID"
+// @Failure      500         {object}  map[string]string  "Failed to fetch users"
+// @Router       /api/users [get]
 func (h *UserHandler) List(w http.ResponseWriter, r *http.Request) {
-	companyIDStr := r.URL.Query().Get("company_id")
-	companyID, err := strconv.Atoi(companyIDStr)
-	if err != nil {
-		respondError(w, http.StatusBadRequest, "Invalid company ID")
-		return
-	}
 
 	limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
 	if limit == 0 {
@@ -72,7 +105,7 @@ func (h *UserHandler) List(w http.ResponseWriter, r *http.Request) {
 	}
 	offset, _ := strconv.Atoi(r.URL.Query().Get("offset"))
 
-	users, err := h.userService.List(r.Context(), companyID, limit, offset)
+	users, err := h.userService.List(r.Context(), limit, offset)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, "Failed to fetch users")
 		return
@@ -81,6 +114,18 @@ func (h *UserHandler) List(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, users)
 }
 
+
+// Delete godoc
+// @Summary      Delete user
+// @Description  Deletes a user by their unique ID
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        id   path  int  true  "User ID"
+// @Success      204  "No Content"
+// @Failure      400  {object}  map[string]string  "Invalid user ID"
+// @Failure      500  {object}  map[string]string  "Failed to delete user"
+// @Router       /api/users/{id} [delete]
 func (h *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
