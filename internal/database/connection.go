@@ -39,8 +39,8 @@ func runMigrations(db *gorm.DB) error {
 		{&models.User{}, "users"},
 		{&models.Project{}, "projects"},
 		{&models.Lead{}, "leads"},
+		{&models.House{},"house"},
 	}
-
 	for _, table := range tables {
 		if !db.Migrator().HasTable(table.name) {
 			log.Printf("Creating table: %s", table.name)
@@ -51,7 +51,6 @@ func runMigrations(db *gorm.DB) error {
 			log.Printf("Table already exists: %s (skipping)", table.name)
 		}
 	}
-
 	log.Println("Database migrations completed")
 	return nil
 }
