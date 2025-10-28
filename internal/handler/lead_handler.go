@@ -18,6 +18,12 @@ type LeadHandler struct {
 	userRepo *repo.UserRepo
 }
 
+type LeadResponse struct {
+	Success bool `json:"success" example:"true"`
+	LeadID  int  `json:"lead_id" example:"42"`
+	HouseID int  `json:"house_id" example:"123"`
+}
+
 func NewLeadHandler(leadRepo *repo.LeadRepo, leadService *service.LeadService, userRepo *repo.UserRepo) *LeadHandler {
 	return &LeadHandler{
 		leadRepo:          leadRepo,
