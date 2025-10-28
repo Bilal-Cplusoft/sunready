@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 	"strings"
-
 	"github.com/Bilal-Cplusoft/sunready/internal/models"
 	"github.com/Bilal-Cplusoft/sunready/internal/repo"
+	"slices"
 )
 
 type CustomerService struct {
@@ -21,12 +21,10 @@ func (s *CustomerService) CreateCustomer(ctx context.Context, customer *models.C
 	if err := customer.Validate(); err != nil {
 		return err
 	}
-	
-	// Set default status if not provided
 	if customer.Status == "" {
 		customer.Status = models.CustomerStatusProspect
 	}
-	
+
 	return s.customerRepo.Create(ctx, customer)
 }
 
@@ -75,7 +73,6 @@ func (s *CustomerService) GetCustomerCountByStatus(ctx context.Context, status s
 }
 
 func (s *CustomerService) UpdateCustomerStatus(ctx context.Context, id int, status string) error {
-	// Validate status
 	validStatuses := []string{
 		models.CustomerStatusProspect,
 		models.CustomerStatusQualified,
@@ -85,19 +82,12 @@ func (s *CustomerService) UpdateCustomerStatus(ctx context.Context, id int, stat
 		models.CustomerStatusComplete,
 		models.CustomerStatusCancelled,
 	}
-	
-	isValid := false
-	for _, validStatus := range validStatuses {
-		if status == validStatus {
-			isValid = true
-			break
-		}
-	}
-	
+
+	isValid := slices.Contains(validStatuses, status)
 	if !isValid {
 		return models.ErrInvalidCustomerStatus
 	}
-	
+
 	return s.customerRepo.UpdateStatus(ctx, id, status)
 }
 
@@ -105,48 +95,47 @@ func (s *CustomerService) GetCustomerByPhoneNumber(ctx context.Context, phoneNum
 	return s.customerRepo.GetByPhoneNumber(ctx, phoneNumber)
 }
 
-// GetCustomerStats returns basic statistics about customers
 func (s *CustomerService) GetCustomerStats(ctx context.Context) (*CustomerStats, error) {
 	total, err := s.customerRepo.Count(ctx)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	prospects, err := s.customerRepo.CountByStatus(ctx, models.CustomerStatusProspect)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	qualified, err := s.customerRepo.CountByStatus(ctx, models.CustomerStatusQualified)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	proposals, err := s.customerRepo.CountByStatus(ctx, models.CustomerStatusProposal)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	contracts, err := s.customerRepo.CountByStatus(ctx, models.CustomerStatusContract)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	installations, err := s.customerRepo.CountByStatus(ctx, models.CustomerStatusInstall)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	completed, err := s.customerRepo.CountByStatus(ctx, models.CustomerStatusComplete)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	cancelled, err := s.customerRepo.CountByStatus(ctx, models.CustomerStatusCancelled)
 	if err != nil {
 		return nil, err
 	}
-	
+
 	return &CustomerStats{
 		Total:         total,
 		Prospects:     prospects,

@@ -62,7 +62,6 @@ func (s *QuoteService) CalculateQuote(input QuoteInput) (*QuoteResult, error) {
 		return nil, fmt.Errorf("monthly electric bill must be greater than 0")
 	}
 
-	// Set defaults
 	costPerWatt := 3.00
 	if input.CostPerWatt != nil {
 		costPerWatt = *input.CostPerWatt
@@ -93,13 +92,11 @@ func (s *QuoteService) CalculateQuote(input QuoteInput) (*QuoteResult, error) {
 		loanTermYears = *input.LoanTermYears
 	}
 
-	// Calculate system costs
 	systemSizeWatts := input.SystemSizeKW * 1000
 	systemCostBeforeIncentives := systemSizeWatts * costPerWatt
 	federalTaxCreditAmount := systemCostBeforeIncentives * taxCredit
 	systemCostAfterIncentives := systemCostBeforeIncentives - federalTaxCreditAmount
 
-	// Calculate monthly loan payment (using simple amortization formula)
 	monthlyRate := interestRate / 12
 	numPayments := float64(loanTermYears * 12)
 	monthlyPayment := 0.0
