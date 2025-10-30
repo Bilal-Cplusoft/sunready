@@ -1136,9 +1136,9 @@ const docTemplate = `{
                     "type": "string",
                     "example": "Smith"
                 },
-                "lead_source": {
+                "lead_id": {
                     "type": "string",
-                    "example": "website"
+                    "example": "12345"
                 },
                 "notes": {
                     "type": "string",
@@ -1251,6 +1251,10 @@ const docTemplate = `{
                 "phone": {
                     "type": "string",
                     "example": "555-123-4567"
+                },
+                "user_type": {
+                    "type": "string",
+                    "example": "0"
                 }
             }
         },
@@ -1373,9 +1377,8 @@ const docTemplate = `{
                     "type": "string",
                     "example": "Smith"
                 },
-                "lead_source": {
-                    "type": "string",
-                    "example": "website"
+                "lead_id": {
+                    "type": "integer"
                 },
                 "notes": {
                     "type": "string",
@@ -1448,8 +1451,25 @@ const docTemplate = `{
                 },
                 "updated_at": {
                     "type": "string"
+                },
+                "user_type": {
+                    "$ref": "#/definitions/models.UserType"
                 }
             }
+        },
+        "models.UserType": {
+            "type": "integer",
+            "format": "int32",
+            "enum": [
+                0,
+                1,
+                2
+            ],
+            "x-enum-varnames": [
+                "UserTypeAdmin",
+                "UserTypeCustomer",
+                "UserTypeGeneral"
+            ]
         },
         "service.CreateLead": {
             "type": "object",

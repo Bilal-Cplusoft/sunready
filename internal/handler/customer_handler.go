@@ -35,7 +35,7 @@ type CreateCustomerRequest struct {
 	HomeOwnershipType      *string  `json:"home_ownership_type" example:"owner"`
 	AverageMonthlyBill     *float64 `json:"average_monthly_bill" example:"150.00"`
 	UtilityProvider        *string  `json:"utility_provider" example:"PG&E"`
-	LeadSource             *string  `json:"lead_source" example:"website"`
+	LeadId                 *string  `json:"lead_id" example:"12345"`
 	ReferralCode           *string  `json:"referral_code" example:"FRIEND2024"`
 	Notes                  *string  `json:"notes" example:"Interested in 10kW system"`
 	PreferredContactMethod *string  `json:"preferred_contact_method" example:"email"`
@@ -82,6 +82,7 @@ func (h *CustomerHandler) CreateCustomer(w http.ResponseWriter, r *http.Request)
 		http.Error(w, "invalid request body: "+err.Error(), http.StatusBadRequest)
 		return
 	}
+	leadId , _ := strconv.Atoi(*req.LeadId)
 
 	customer := &models.Customer{
 		FirstName:              req.FirstName,
@@ -97,7 +98,7 @@ func (h *CustomerHandler) CreateCustomer(w http.ResponseWriter, r *http.Request)
 		HomeOwnershipType:      req.HomeOwnershipType,
 		AverageMonthlyBill:     req.AverageMonthlyBill,
 		UtilityProvider:        req.UtilityProvider,
-		LeadSource:             req.LeadSource,
+		LeadId:             leadId,
 		ReferralCode:           req.ReferralCode,
 		Notes:                  req.Notes,
 		PreferredContactMethod: req.PreferredContactMethod,

@@ -29,8 +29,8 @@ definitions:
       last_name:
         example: Smith
         type: string
-      lead_source:
-        example: website
+      lead_id:
+        example: "12345"
         type: string
       notes:
         example: Interested in 10kW system
@@ -111,6 +111,9 @@ definitions:
         type: string
       phone:
         example: 555-123-4567
+        type: string
+      user_type:
+        example: "0"
         type: string
     type: object
   handler.UpdateCustomerRequest:
@@ -200,9 +203,8 @@ definitions:
       last_name:
         example: Smith
         type: string
-      lead_source:
-        example: website
-        type: string
+      lead_id:
+        type: integer
       notes:
         example: Interested in 10kW system
         type: string
@@ -254,7 +256,20 @@ definitions:
         type: string
       updated_at:
         type: string
+      user_type:
+        $ref: '#/definitions/models.UserType'
     type: object
+  models.UserType:
+    enum:
+    - 0
+    - 1
+    - 2
+    format: int32
+    type: integer
+    x-enum-varnames:
+    - UserTypeAdmin
+    - UserTypeCustomer
+    - UserTypeGeneral
   service.CreateLead:
     properties:
       address:

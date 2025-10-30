@@ -30,9 +30,6 @@ type Lead struct {
 ID                  int        `json:"id" gorm:"primaryKey;column:id"`
 CreatedAt           time.Time  `json:"created_at" gorm:"column:created_at"`
 UpdatedAt           time.Time  `json:"updated_at" gorm:"column:updated_at"`
-ExternalLeadID      *int       `json:"external_lead_id" gorm:"column:external_lead_id;uniqueIndex" example:"12345"`
-SyncStatus          string     `json:"sync_status" gorm:"column:sync_status;default:'pending'" example:"synced"`
-LastSyncedAt        *time.Time `json:"last_synced_at" gorm:"column:last_synced_at"`
 State               int        `json:"state" gorm:"column:state;not null;default:0" example:"0"`
 CustomerID          int        `json:"customer_id" gorm:"column:customer_id;not null" example:"1"`
 CreatorID           *int       `json:"creator_id" gorm:"column:creator_id" example:"1"`
@@ -40,8 +37,6 @@ Latitude            float64    `json:"latitude" gorm:"column:latitude;not null" 
 Longitude           float64    `json:"longitude" gorm:"column:longitude;not null" example:"-122.4194"`
 Address             string     `json:"address" gorm:"column:address" example:"123 Solar St, San Francisco, CA 94102"`
 Source              int        `json:"source" gorm:"column:source;not null;default:0" example:"0"`
-PromoCode           *string    `json:"promo_code" gorm:"column:promo_code" example:"SOLAR2025"`
-Is2D                bool       `json:"is_2d" gorm:"column:is_2d;default:false" example:"false"`
 KwhUsage            float64    `json:"kwh_usage" gorm:"column:kwh_usage" example:"12000"`
 KwhPerKwManual      int        `json:"kwh_per_kw_manual" gorm:"column:kwh_per_kw_manual" example:"1200"`
 ElectricityCostPre  *int       `json:"electricity_cost_pre" gorm:"column:electricity_cost_pre" example:"150"`
@@ -71,11 +66,6 @@ PtoState               *int `json:"pto_state" gorm:"column:pto_state" example:"0
 InstallationDate *string `json:"installation_date" gorm:"column:installation_date" example:"2025-10-15"`
 DateNtp          *string `json:"date_ntp" gorm:"column:date_ntp" example:"2025-10-10"`
 DateInstalled    *string `json:"date_installed" gorm:"column:date_installed" example:"2025-10-15"`
-LightFusion3DProjectID *int    `json:"lightfusion_3d_project_id" gorm:"column:lightfusion_3d_project_id" example:"123"`
-LightFusion3DHouseID   *int    `json:"lightfusion_3d_house_id" gorm:"column:lightfusion_3d_house_id" example:"456"`
-Model3DStatus          *string `json:"model_3d_status" gorm:"column:model_3d_status" example:"processing"`
-Model3DCreatedAt       *time.Time `json:"model_3d_created_at" gorm:"column:model_3d_created_at"`
-Model3DCompletedAt     *time.Time `json:"model_3d_completed_at" gorm:"column:model_3d_completed_at"`
 }
 
 func (Lead) TableName() string {

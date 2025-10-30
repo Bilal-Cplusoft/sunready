@@ -7,6 +7,7 @@ import (
 
 type Customer struct {
 	ID          int       `json:"id" gorm:"primaryKey;column:id"`
+	LeadId      int       `json:"lead_id" gorm:"column:lead_id"`
 	CreatedAt   time.Time `json:"created_at" gorm:"column:created_at"`
 	UpdatedAt   time.Time `json:"updated_at" gorm:"column:updated_at"`
 	FirstName   string    `json:"first_name" gorm:"column:first_name;not null" example:"John"`
@@ -23,7 +24,6 @@ type Customer struct {
 	HomeOwnershipType  *string  `json:"home_ownership_type" gorm:"column:home_ownership_type" example:"owner"`
 	AverageMonthlyBill *float64 `json:"average_monthly_bill" gorm:"column:average_monthly_bill" example:"150.00"`
 	UtilityProvider    *string  `json:"utility_provider" gorm:"column:utility_provider" example:"PG&E"`
-	LeadSource         *string `json:"lead_source" gorm:"column:lead_source" example:"website"`
 	ReferralCode       *string `json:"referral_code" gorm:"column:referral_code" example:"FRIEND2024"`
 	Status             string    `json:"status" gorm:"column:status;default:'prospect'" example:"prospect"`
 	Notes              *string   `json:"notes" gorm:"column:notes" example:"Interested in 10kW system"`
