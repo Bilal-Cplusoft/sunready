@@ -238,6 +238,25 @@ definitions:
         example: "94102"
         type: string
     type: object
+  models.Project:
+    properties:
+      address:
+        type: string
+      created_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
   models.User:
     properties:
       address:
@@ -1146,6 +1165,158 @@ paths:
       summary: Update user
       tags:
       - users
+  /projects:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new project record in the system.
+      parameters:
+      - description: Project data
+        in: body
+        name: project
+        required: true
+        schema:
+          $ref: '#/definitions/models.Project'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Project created successfully
+          schema:
+            $ref: '#/definitions/models.Project'
+        "400":
+          description: Invalid request body
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Failed to create project
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Create a new project
+      tags:
+      - Projects
+  /projects/{id}:
+    delete:
+      description: Deletes a project by its ID.
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Project deleted successfully
+        "400":
+          description: Invalid project ID
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Failed to delete project
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Delete a project
+      tags:
+      - Projects
+    get:
+      description: Retrieves a project by its unique ID.
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Project found
+          schema:
+            $ref: '#/definitions/models.Project'
+        "400":
+          description: Invalid project ID
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: Project not found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Get project by ID
+      tags:
+      - Projects
+    put:
+      consumes:
+      - application/json
+      description: Updates an existing project by its ID.
+      parameters:
+      - description: Project ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated project data
+        in: body
+        name: project
+        required: true
+        schema:
+          $ref: '#/definitions/models.Project'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Project updated successfully
+          schema:
+            $ref: '#/definitions/models.Project'
+        "400":
+          description: Invalid request body or project ID
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Failed to update project
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Update a project
+      tags:
+      - Projects
+  /projects/user:
+    get:
+      description: Retrieves all projects associated with a specific user with pagination.
+      parameters:
+      - description: User ID
+        in: query
+        name: user_id
+        required: true
+        type: integer
+      - description: 'Results limit (default: 20)'
+        in: query
+        name: limit
+        type: integer
+      - description: Results offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of projects
+          schema:
+            items:
+              $ref: '#/definitions/models.Project'
+            type: array
+        "400":
+          description: Invalid user ID
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Failed to fetch projects
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: List projects by user ID
+      tags:
+      - Projects
 securityDefinitions:
   BearerAuth:
     description: Type "Bearer" followed by a space and JWT token.
