@@ -31,7 +31,7 @@ ID                  int        `json:"id" gorm:"primaryKey;column:id"`
 CreatedAt           time.Time  `json:"created_at" gorm:"column:created_at"`
 UpdatedAt           time.Time  `json:"updated_at" gorm:"column:updated_at"`
 State               int        `json:"state" gorm:"column:state;not null;default:0" example:"0"`
-CustomerID          int        `json:"customer_id" gorm:"column:customer_id;not null" example:"1"`
+ProjectID          int        `json:"project_id" gorm:"column:project_id;not null" example:"1"`
 CreatorID           *int       `json:"creator_id" gorm:"column:creator_id" example:"1"`
 Latitude            float64    `json:"latitude" gorm:"column:latitude;not null" example:"37.7749"`
 Longitude           float64    `json:"longitude" gorm:"column:longitude;not null" example:"-122.4194"`

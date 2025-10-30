@@ -23,7 +23,7 @@ type LeadService struct {
 }
 
 type CreateLead struct {
-	CustomerID       int     `json:"customer_id" example:"1"`
+	ProjectID       int     `json:"project_id" example:"1"`
 	CreatorID        *int    `json:"creator_id,omitempty" example:"1"`
 	Latitude         float64 `json:"latitude" example:"37.7749"`
 	Longitude        float64 `json:"longitude" example:"-122.4194"`
@@ -67,7 +67,7 @@ func NewLeadService(leadRepo *repo.LeadRepo, houseRepo *repo.HouseRepo) *LeadSer
 	}
 }
 
-func (s *LeadService) CreateLead(ctx context.Context, req CreateLead, userID int, customerID int) (*CreateLeadResponse, error) {
+func (s *LeadService) CreateLead(ctx context.Context, req CreateLead, userID int, projectID int) (*CreateLeadResponse, error) {
 	house := models.House{
 			Lat:         req.Latitude,
 			Lng:         req.Longitude,
@@ -81,7 +81,7 @@ func (s *LeadService) CreateLead(ctx context.Context, req CreateLead, userID int
 	houseID := house.ID
 
 	lead := models.Lead{
-			CustomerID: customerID,
+			ProjectID: projectID,
 			CreatorID:  &userID,
 			Latitude:   req.Latitude,
 			Longitude:  req.Longitude,

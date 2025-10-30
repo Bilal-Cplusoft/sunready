@@ -56,11 +56,11 @@ func (h *LeadHandler) CreateLead(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "User ID missing from context", http.StatusUnauthorized)
 		return
     }
-    if req.CustomerID == 0 {
-		respondError(w, http.StatusBadRequest, "Customer ID is required")
+    if req.ProjectID == 0 {
+		respondError(w, http.StatusBadRequest, "Project ID is required")
 		return
 	}
-	response, err := h.leadService.CreateLead(r.Context(), req, userID, req.CustomerID)
+	response, err := h.leadService.CreateLead(r.Context(), req, userID, req.ProjectID)
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, err.Error())
 		return

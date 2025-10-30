@@ -284,9 +284,6 @@ definitions:
       creator_id:
         example: 1
         type: integer
-      customer_id:
-        example: 1
-        type: integer
       hardware_type:
         type: string
       homeowner_email:
@@ -313,6 +310,9 @@ definitions:
         type: integer
       period:
         type: string
+      project_id:
+        example: 1
+        type: integer
       sales_rep_email:
         type: string
       state:

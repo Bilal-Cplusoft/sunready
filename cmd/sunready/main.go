@@ -89,33 +89,31 @@ func main() {
 		AllowCredentials: true,
 		MaxAge:           300,
 	}))
-	r.Group(func(pr chi.Router) {
-     pr.Use(middleware.AuthMiddleware(authService))
-     pr.Post("/api/leads", leadHandler.CreateLead)
+	r.Group(func(user chi.Router) {
+     user.Use(middleware.AuthMiddleware(authService))
+     user.Post("/api/leads", leadHandler.CreateLead)
+     user.Post("/api/customers", customerHandler.CreateCustomer)
+   	 user.Get("/api/customers/stats", customerHandler.GetCustomerStats)
+	 user.Get("/api/customers/{id}", customerHandler.GetCustomer)
+	 user.Put("/api/customers/{id}", customerHandler.UpdateCustomer)
+	 user.Delete("/api/customers/{id}", customerHandler.DeleteCustomer)
+	 user.Patch("/api/customers/{id}/status", customerHandler.UpdateCustomerStatus)
+	 user.Post("/api/projects", projectHandler.Create)
+	 user.Get("/api/projects/{id}", projectHandler.GetByID)
+	 user.Put("/api/projects/{id}", projectHandler.Update)
+	 user.Delete("/api/projects/{id}", projectHandler.Delete)
     })
-	r.Group(func(ar chi.Router) {
-		ar.Use(middleware.AdminMiddleware(authService))
-		ar.Get("/api/users/{id}", userHandler.GetByID)
-		ar.Put("/api/users/{id}", userHandler.Update)
-		ar.Delete("/api/users/{id}", userHandler.Delete)
-		ar.Get("/api/users", userHandler.List)
-		ar.Post("/api/customers", customerHandler.CreateCustomer)
-		ar.Get("/api/customers/stats", customerHandler.GetCustomerStats)
-		ar.Get("/api/customers/{id}", customerHandler.GetCustomer)
-		ar.Put("/api/customers/{id}", customerHandler.UpdateCustomer)
-		ar.Delete("/api/customers/{id}", customerHandler.DeleteCustomer)
-		ar.Patch("/api/customers/{id}/status", customerHandler.UpdateCustomerStatus)
-		ar.Get("/api/customers", customerHandler.ListCustomers)
+	r.Group(func(admin chi.Router) {
+		admin.Use(middleware.AdminMiddleware(authService))
+		admin.Get("/api/users/{id}", userHandler.GetByID)
+		admin.Put("/api/users/{id}", userHandler.Update)
+		admin.Delete("/api/users/{id}", userHandler.Delete)
+		admin.Get("/api/users", userHandler.List)
+		admin.Get("/api/customers", customerHandler.ListCustomers)
 	})
 
 	r.Post("/api/auth/register", authHandler.Register)
 	r.Post("/api/auth/login", authHandler.Login)
-
-	r.Post("/api/projects", projectHandler.Create)
-	r.Get("/api/projects/{id}", projectHandler.GetByID)
-	r.Put("/api/projects/{id}", projectHandler.Update)
-	r.Delete("/api/projects/{id}", projectHandler.Delete)
-	r.Get("/api/projects", projectHandler.ListByCustomer)
 	r.Get("/api/projects/user", projectHandler.ListByUser)
 
 

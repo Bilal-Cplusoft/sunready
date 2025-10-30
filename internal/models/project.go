@@ -6,7 +6,6 @@ type Project struct {
 	ID          int       `json:"id" gorm:"primaryKey;column:id"`
 	CreatedAt   time.Time `json:"created_at" gorm:"column:created_at"`
 	UpdatedAt   time.Time `json:"updated_at" gorm:"column:updated_at"`
-	CustomerID  int       `json:"customer_id" gorm:"column:customer_id"`
 	UserID      *int      `json:"user_id" gorm:"column:user_id"`
 	Name        string    `json:"name" gorm:"column:name"`
 	Description *string   `json:"description" gorm:"column:description"`

@@ -1491,10 +1491,6 @@ const docTemplate = `{
                     "type": "integer",
                     "example": 1
                 },
-                "customer_id": {
-                    "type": "integer",
-                    "example": 1
-                },
                 "hardware_type": {
                     "type": "string"
                 },
@@ -1531,6 +1527,10 @@ const docTemplate = `{
                 },
                 "period": {
                     "type": "string"
+                },
+                "project_id": {
+                    "type": "integer",
+                    "example": 1
                 },
                 "sales_rep_email": {
                     "type": "string"
