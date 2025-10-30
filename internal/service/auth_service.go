@@ -26,7 +26,7 @@ func NewAuthService(userRepo *repo.UserRepo, jwtSecret string) *AuthService {
 
 type Claims struct {
 	UserID    int  `json:"user_id"`
-	CompanyID *int `json:"company_id,omitempty"`
+	UserType  int `json:"user_type"`
 	jwt.RegisteredClaims
 }
 
@@ -71,7 +71,7 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (string
 		return "", nil, errors.New("invalid credentials")
 	}
 
-	token, err := s.GenerateToken(user.ID)
+	token, err := s.GenerateToken(user.ID,int(user.UserType))
 	if err != nil {
 		return "", nil, err
 	}
@@ -79,9 +79,10 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (string
 	return token, user, nil
 }
 
-func (s *AuthService) GenerateToken(userID int) (string, error) {
+func (s *AuthService) GenerateToken(userID int, userType int) (string, error) {
 	claims := &Claims{
 		UserID:    userID,
+		UserType: userType,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

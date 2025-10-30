@@ -58,7 +58,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	token, err := h.authService.GenerateToken(user.ID)
+	token, err := h.authService.GenerateToken(user.ID, int(user.UserType))
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, "Failed to generate token")
 		return
