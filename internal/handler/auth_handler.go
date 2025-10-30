@@ -23,6 +23,7 @@ type RegisterRequest struct {
 	LastName  string `json:"last_name" example:"Doe"`
 	Address   string `json:"address" example:"123 Main St, Anytown, USA"`
 	Phone     string `json:"phone" example:"555-123-4567"`
+	UserType  string `json:"user_type" example:"0"`
 }
 
 type LoginRequest struct {
@@ -52,7 +53,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
-	user, err := h.authService.Register(r.Context(), req.Email, req.Password, req.FirstName, req.LastName,  req.Address, req.Phone)
+	user, err := h.authService.Register(r.Context(), req.Email, req.Password, req.FirstName, req.LastName,  req.Address, req.Phone, req.UserType)
 	if err != nil {
 		respondError(w, http.StatusBadRequest, err.Error())
 		return

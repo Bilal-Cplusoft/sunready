@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"time"
+	"strconv"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/Bilal-Cplusoft/sunready/internal/models"
@@ -29,7 +30,7 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-func (s *AuthService) Register(ctx context.Context, email, password, firstName, lastName string, address, phoneNumber string) (*models.User, error) {
+func (s *AuthService) Register(ctx context.Context, email, password, firstName, lastName string, address, phoneNumber string, userType string) (*models.User, error) {
 	existingUser, _ := s.userRepo.GetByEmail(ctx, email)
 	if existingUser != nil {
 		return nil, errors.New("user already exists")
@@ -38,6 +39,7 @@ func (s *AuthService) Register(ctx context.Context, email, password, firstName, 
 	if err != nil {
 		return nil, err
 	}
+	usertype,_ := strconv.Atoi(userType)
 	hashedStr := string(hashedPassword)
 	user := &models.User{
 		Email:       email,
@@ -46,6 +48,7 @@ func (s *AuthService) Register(ctx context.Context, email, password, firstName, 
 		LastName:    &lastName,
 		Address:     &address,
 		PhoneNumber: &phoneNumber,
+		UserType: models.UserType(usertype),
 	}
 	if err := s.userRepo.Create(ctx, user); err != nil {
 		return nil, err

@@ -14,6 +14,7 @@ type User struct {
 	Password    *string   `json:"-" gorm:"column:password"`
 	PhoneNumber *string   `json:"phone_number" gorm:"column:phone_number"`
 	Address     *string   `json:"address" gorm:"column:address"`
+	UserType    UserType  `json:"user_type" gorm:"column:user_type"`
 }
 
 func (User) TableName() string {
@@ -23,10 +24,7 @@ func (User) TableName() string {
 type UserType int16
 
 const (
-	UserTypeUnknown   UserType = 0
-	UserTypeAdmin     UserType = 1
-	UserTypeSales     UserType = 2
-	UserTypeSupport   UserType = 3
-	UserTypeInstaller UserType = 4
-	UserTypeCustomer  UserType = 5
+	UserTypeAdmin     UserType = 0
+	UserTypeCustomer  UserType = 1
+	UserTypeGeneral   UserType = 2
 )
