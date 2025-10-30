@@ -15,6 +15,9 @@ type User struct {
 	PhoneNumber *string   `json:"phone_number" gorm:"column:phone_number"`
 	Address     *string   `json:"address" gorm:"column:address"`
 	UserType    UserType  `json:"user_type" gorm:"column:user_type"`
+	HomeOwnershipType  *string  `json:"home_ownership_type" gorm:"column:home_ownership_type" example:"owner"`
+	AverageMonthlyBill *float64 `json:"average_monthly_bill" gorm:"column:average_monthly_bill" example:"150.00"`
+	UtilityProvider    *string  `json:"utility_provider" gorm:"column:utility_provider" example:"PG&E"`
 }
 
 func (User) TableName() string {

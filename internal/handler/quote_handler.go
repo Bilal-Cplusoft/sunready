@@ -1,9 +1,10 @@
 package handler
 
 import (
-	"github.com/Bilal-Cplusoft/sunready/internal/service"
-	"net/http"
 	"encoding/json"
+	"net/http"
+
+	"github.com/Bilal-Cplusoft/sunready/internal/service"
 )
 
 type QuoteHandler struct {
@@ -13,7 +14,6 @@ type QuoteHandler struct {
 func NewQuoteHandler(quoteService *service.QuoteService) *QuoteHandler {
 	return &QuoteHandler{quoteService: quoteService}
 }
-
 
 // GetQuote godoc
 // @Summary      Calculate solar quote
@@ -31,20 +31,17 @@ func (h *QuoteHandler) GetQuote(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
-
 	var input service.QuoteInput
 	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
 		http.Error(w, "invalid request payload: "+err.Error(), http.StatusBadRequest)
 		return
 	}
 	defer r.Body.Close()
-
 	result, err := h.quoteService.CalculateQuote(input)
 	if err != nil {
 		http.Error(w, "failed to calculate quote: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(result)

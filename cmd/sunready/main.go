@@ -55,7 +55,6 @@ func main() {
 	}
 
 	userRepo := repo.NewUserRepo(db)
-	customerRepo := repo.NewCustomerRepo(db)
 	projectRepo := repo.NewProjectRepo(db)
 	quoteRepo := repo.NewQuoteRepo(db)
 	leadRepo := repo.NewLeadRepo(db)
@@ -65,13 +64,11 @@ func main() {
 
 	authService := service.NewAuthService(userRepo, jwtSecret)
 	userService := service.NewUserService(userRepo)
-	customerService := service.NewCustomerService(customerRepo)
 	projectService := service.NewProjectService(projectRepo)
 	quoteService := service.NewQuoteService(quoteRepo)
 	leadService := service.NewLeadService(leadRepo,houseRepo)
 	authHandler := handler.NewAuthHandler(authService,sendGridClient)
 	userHandler := handler.NewUserHandler(userService)
-	customerHandler := handler.NewCustomerHandler(customerService)
 	projectHandler := handler.NewProjectHandler(projectService)
 	quoteHandler := handler.NewQuoteHandler(quoteService)
 	leadHandler := handler.NewLeadHandler(leadRepo,leadService,userRepo)
@@ -92,16 +89,11 @@ func main() {
 	r.Group(func(user chi.Router) {
      user.Use(middleware.AuthMiddleware(authService))
      user.Post("/api/leads", leadHandler.CreateLead)
-     user.Post("/api/customers", customerHandler.CreateCustomer)
-   	 user.Get("/api/customers/stats", customerHandler.GetCustomerStats)
-	 user.Get("/api/customers/{id}", customerHandler.GetCustomer)
-	 user.Put("/api/customers/{id}", customerHandler.UpdateCustomer)
-	 user.Delete("/api/customers/{id}", customerHandler.DeleteCustomer)
-	 user.Patch("/api/customers/{id}/status", customerHandler.UpdateCustomerStatus)
 	 user.Post("/api/projects", projectHandler.Create)
 	 user.Get("/api/projects/{id}", projectHandler.GetByID)
 	 user.Put("/api/projects/{id}", projectHandler.Update)
 	 user.Delete("/api/projects/{id}", projectHandler.Delete)
+	 user.Post("/api/quote", quoteHandler.GetQuote)
     })
 	r.Group(func(admin chi.Router) {
 		admin.Use(middleware.AdminMiddleware(authService))
@@ -109,15 +101,12 @@ func main() {
 		admin.Put("/api/users/{id}", userHandler.Update)
 		admin.Delete("/api/users/{id}", userHandler.Delete)
 		admin.Get("/api/users", userHandler.List)
-		admin.Get("/api/customers", customerHandler.ListCustomers)
 	})
 
 	r.Post("/api/auth/register", authHandler.Register)
 	r.Post("/api/auth/login", authHandler.Login)
 	r.Get("/api/projects/user", projectHandler.ListByUser)
 
-
-	r.Post("/api/quote", quoteHandler.GetQuote)
 
 	r.Get("/api/leads", leadHandler.ListLeads)
 	r.Get("/api/leads/{id}", leadHandler.GetLead)

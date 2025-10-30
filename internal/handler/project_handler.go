@@ -14,6 +14,16 @@ type ProjectHandler struct {
 	projectService *service.ProjectService
 }
 
+
+type CreateOrUpdateProjectRequest struct {
+	UserID      *int    `json:"user_id,omitempty" example:"1"`
+	Name        string  `json:"name" binding:"required" example:"Solar Panel Installation"`
+	Description *string `json:"description,omitempty" example:"Residential rooftop solar project"`
+	Status      *string `json:"status,omitempty" example:"active"`
+	Address     *string `json:"address,omitempty" example:"123 Green Energy Street, San Diego, CA"`
+}
+
+
 func NewProjectHandler(projectService *service.ProjectService) *ProjectHandler {
 	return &ProjectHandler{projectService: projectService}
 }
@@ -25,19 +35,32 @@ func NewProjectHandler(projectService *service.ProjectService) *ProjectHandler {
 // @Tags Projects
 // @Accept json
 // @Produce json
-// @Param project body models.Project true "Project data"
+// @Param request body CreateOrUpdateProjectRequest true "Project data"
 // @Success 201 {object} models.Project "Project created successfully"
-// @Failure 400 {object} ErrorResponse "Invalid request body"
-// @Failure 500 {object} ErrorResponse "Failed to create project"
-// @Router /projects [post]
+// @Failure 400 {string} string "Invalid request body"
+// @Failure 500 {string} string "Failed to create project"
+// @Router /api/projects [post]
 func (h *ProjectHandler) Create(w http.ResponseWriter, r *http.Request) {
-	var project models.Project
-	if err := json.NewDecoder(r.Body).Decode(&project); err != nil {
+	var req CreateOrUpdateProjectRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		respondError(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
 
-	if err := h.projectService.Create(r.Context(), &project); err != nil {
+	project := &models.Project{
+		UserID:      req.UserID,
+		Name:        req.Name,
+		Description: req.Description,
+		Status:      func() string {
+			if req.Status != nil {
+				return *req.Status
+			}
+			return "draft"
+		}(),
+		Address: req.Address,
+	}
+
+	if err := h.projectService.Create(r.Context(), project); err != nil {
 		respondError(w, http.StatusInternalServerError, "Failed to create project")
 		return
 	}
@@ -53,9 +76,9 @@ func (h *ProjectHandler) Create(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param id path int true "Project ID"
 // @Success 200 {object} models.Project "Project found"
-// @Failure 400 {object} ErrorResponse "Invalid project ID"
-// @Failure 404 {object} ErrorResponse "Project not found"
-// @Router /projects/{id} [get]
+// @Failure 400 {string} string "Invalid project ID"
+// @Failure 404 {string} string "Project not found"
+// @Router /api/projects/{id} [get]
 func (h *ProjectHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
@@ -82,11 +105,11 @@ func (h *ProjectHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param id path int true "Project ID"
-// @Param project body models.Project true "Updated project data"
+// @Param request body CreateOrUpdateProjectRequest true "Updated project data"
 // @Success 200 {object} models.Project "Project updated successfully"
-// @Failure 400 {object} ErrorResponse "Invalid request body or project ID"
-// @Failure 500 {object} ErrorResponse "Failed to update project"
-// @Router /projects/{id} [put]
+// @Failure 400 {string} string "Invalid request body or project ID"
+// @Failure 500 {string} string "Failed to update project"
+// @Router /api/projects/{id} [put]
 func (h *ProjectHandler) Update(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
@@ -95,14 +118,21 @@ func (h *ProjectHandler) Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var project models.Project
+	var project CreateOrUpdateProjectRequest
 	if err := json.NewDecoder(r.Body).Decode(&project); err != nil {
 		respondError(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
+	projectModel := models.Project{
+		ID: id,
+		Name: project.Name,
+		Description: project.Description,
+		UserID:  project.UserID,
+		Address: project.Address,
+		Status: *project.Status,
+	}
 
-	project.ID = id
-	if err := h.projectService.Update(r.Context(), &project); err != nil {
+	if err := h.projectService.Update(r.Context(), &projectModel); err != nil {
 		respondError(w, http.StatusInternalServerError, "Failed to update project")
 		return
 	}
@@ -117,10 +147,10 @@ func (h *ProjectHandler) Update(w http.ResponseWriter, r *http.Request) {
 // @Tags Projects
 // @Produce json
 // @Param id path int true "Project ID"
-// @Success 204 "Project deleted successfully"
-// @Failure 400 {object} ErrorResponse "Invalid project ID"
-// @Failure 500 {object} ErrorResponse "Failed to delete project"
-// @Router /projects/{id} [delete]
+// @Success 204 {string} string "Project deleted successfully"
+// @Failure 400 {string} string "Invalid project ID"
+// @Failure 500 {string} string "Failed to delete project"
+// @Router /api/projects/{id} [delete]
 func (h *ProjectHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
@@ -139,16 +169,16 @@ func (h *ProjectHandler) Delete(w http.ResponseWriter, r *http.Request) {
 
 // ListByUser godoc
 // @Summary List projects by user ID
-// @Description Retrieves all projects associated with a specific user with pagination.
+// @Description Retrieves all projects associated with a specific user, with pagination.
 // @Tags Projects
 // @Produce json
 // @Param user_id query int true "User ID"
 // @Param limit query int false "Results limit (default: 20)"
 // @Param offset query int false "Results offset"
 // @Success 200 {array} models.Project "List of projects"
-// @Failure 400 {object} ErrorResponse "Invalid user ID"
-// @Failure 500 {object} ErrorResponse "Failed to fetch projects"
-// @Router /projects/user [get]
+// @Failure 400 {string} string "Invalid user ID"
+// @Failure 500 {string} string "Failed to fetch projects"
+// @Router /api/projects/user [get]
 func (h *ProjectHandler) ListByUser(w http.ResponseWriter, r *http.Request) {
 	userIDStr := r.URL.Query().Get("user_id")
 	userID, err := strconv.Atoi(userIDStr)

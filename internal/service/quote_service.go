@@ -55,52 +55,26 @@ func (s *QuoteService) CalculateQuote(input QuoteInput) (*QuoteResult, error) {
 	if input.SystemSizeKW <= 0 {
 		return nil, fmt.Errorf("system size must be greater than 0")
 	}
-	if input.AnnualProductionKWh <= 0 {
-		return nil, fmt.Errorf("annual production must be greater than 0")
-	}
 	if input.MonthlyElectricBill <= 0 {
 		return nil, fmt.Errorf("monthly electric bill must be greater than 0")
 	}
-
 	costPerWatt := 3.00
-	if input.CostPerWatt != nil {
-		costPerWatt = *input.CostPerWatt
-	}
-
 	utilityRate := 0.13
-	if input.UtilityRatePerKWh != nil {
-		utilityRate = *input.UtilityRatePerKWh
-	}
-
 	annualIncrease := 0.03
-	if input.AnnualUtilityIncrease != nil {
-		annualIncrease = *input.AnnualUtilityIncrease
-	}
-
-	taxCredit := 0.26
-	if input.FederalTaxCredit != nil {
-		taxCredit = *input.FederalTaxCredit
-	}
-
+	taxCredit := 0.30
 	interestRate := 0.0699
-	if input.LoanInterestRate != nil {
-		interestRate = *input.LoanInterestRate
-	}
-
 	loanTermYears := 25
-	if input.LoanTermYears != nil {
-		loanTermYears = *input.LoanTermYears
-	}
-
+	sunHoursPerDay := 5.0
+	electricalOffsetPct := 95.0
+	annualProductionKWh := input.SystemSizeKW * sunHoursPerDay * 365 * 0.75
+	panelCount := input.PanelCount
 	systemSizeWatts := input.SystemSizeKW * 1000
 	systemCostBeforeIncentives := systemSizeWatts * costPerWatt
 	federalTaxCreditAmount := systemCostBeforeIncentives * taxCredit
 	systemCostAfterIncentives := systemCostBeforeIncentives - federalTaxCreditAmount
-
 	monthlyRate := interestRate / 12
 	numPayments := float64(loanTermYears * 12)
 	monthlyPayment := 0.0
-
 	if interestRate > 0 {
 		monthlyPayment = systemCostBeforeIncentives *
 			(monthlyRate * math.Pow(1+monthlyRate, numPayments)) /
@@ -110,37 +84,31 @@ func (s *QuoteService) CalculateQuote(input QuoteInput) (*QuoteResult, error) {
 	}
 
 	annualCurrentBill := input.MonthlyElectricBill * 12
-
-	offsetRatio := input.ElectricalOffsetPct / 100.0
-	annualSolarProduction := input.AnnualProductionKWh
-	annualSolarSavings := annualSolarProduction * utilityRate
-
+	offsetRatio := electricalOffsetPct / 100.0
+	annualSolarSavings := annualProductionKWh * utilityRate
 	remainingUsagePct := math.Max(0, 1.0-offsetRatio)
 	newMonthlyBill := input.MonthlyElectricBill * remainingUsagePct
-
 	monthlySavingsFromSolar := input.MonthlyElectricBill - newMonthlyBill
 	netMonthlySavings := monthlySavingsFromSolar - monthlyPayment
 	annualSavingsFromReducedBill := (input.MonthlyElectricBill - newMonthlyBill) * 12
-    firstYearSavings := annualSavingsFromReducedBill - (monthlyPayment * 12)
-	twentyFiveYearSavings := 0.0
+	firstYearSavings := annualSavingsFromReducedBill - (monthlyPayment * 12)
+
+
 	totalUtilityCostWithoutSolar := 0.0
 	totalCostWithSolar := 0.0
-
 	for year := 1; year <= 25; year++ {
-      yearlyBill := annualCurrentBill * math.Pow(1+annualIncrease, float64(year-1))
-      totalUtilityCostWithoutSolar += yearlyBill
-      yearlyNewBill := newMonthlyBill * 12 * math.Pow(1+annualIncrease, float64(year-1))
-      if year <= loanTermYears {
-          totalCostWithSolar += (monthlyPayment * 12) + yearlyNewBill
-      } else {
-          totalCostWithSolar += yearlyNewBill
-      }
-    }
+		yearlyBill := annualCurrentBill * math.Pow(1+annualIncrease, float64(year-1))
+		totalUtilityCostWithoutSolar += yearlyBill
 
-	twentyFiveYearSavings = totalUtilityCostWithoutSolar - totalCostWithSolar
-
+		yearlyNewBill := newMonthlyBill * 12 * math.Pow(1+annualIncrease, float64(year-1))
+		if year <= loanTermYears {
+			totalCostWithSolar += (monthlyPayment * 12) + yearlyNewBill
+		} else {
+			totalCostWithSolar += yearlyNewBill
+		}
+	}
+	twentyFiveYearSavings := totalUtilityCostWithoutSolar - totalCostWithSolar
 	simplePayback := systemCostAfterIncentives / annualSolarSavings
-
 	breakEvenYear := 0
 	cumulativeSavings := 0.0
 	for year := 1; year <= 30; year++ {
@@ -160,21 +128,22 @@ func (s *QuoteService) CalculateQuote(input QuoteInput) (*QuoteResult, error) {
 	}
 
 	summary := fmt.Sprintf(
-		"This %0.2f kW solar system with %d panels will produce approximately %0.0f kWh annually, "+
-		"offsetting %0.0f%% of your electricity usage. "+
-		"The system costs $%0.2f before incentives ($%0.2f after federal tax credit). "+
-		"Your estimated monthly payment is $%0.2f, and you'll save approximately $%0.2f in the first year. "+
-		"Over 25 years, your total savings are estimated at $%0.2f.",
+		"This %.2f kW solar system with %d panels will produce approximately %.0f kWh annually, "+
+			"offsetting %.0f%% of your electricity usage. "+
+			"The system costs $%.2f before incentives ($%.2f after federal tax credit). "+
+			"Your estimated monthly payment is $%.2f, and you'll save approximately $%.2f in the first year. "+
+			"Over 25 years, your total savings are estimated at $%.2f.",
 		input.SystemSizeKW,
-		input.PanelCount,
-		input.AnnualProductionKWh,
-		input.ElectricalOffsetPct,
+		panelCount,
+		annualProductionKWh,
+		electricalOffsetPct,
 		systemCostBeforeIncentives,
 		systemCostAfterIncentives,
 		monthlyPayment,
 		firstYearSavings,
 		twentyFiveYearSavings,
 	)
+
 	return &QuoteResult{
 		SystemCostBeforeIncentives: math.Round(systemCostBeforeIncentives*100) / 100,
 		FederalTaxCredit:           math.Round(federalTaxCreditAmount*100) / 100,
@@ -186,9 +155,9 @@ func (s *QuoteService) CalculateQuote(input QuoteInput) (*QuoteResult, error) {
 		FirstYearSavings:           math.Round(firstYearSavings*100) / 100,
 		TwentyFiveYearSavings:      math.Round(twentyFiveYearSavings*100) / 100,
 		SystemSizeKW:               input.SystemSizeKW,
-		AnnualProductionKWh:        input.AnnualProductionKWh,
-		PanelCount:                 input.PanelCount,
-		ElectricalOffset:           input.ElectricalOffsetPct,
+		AnnualProductionKWh:        math.Round(annualProductionKWh*100) / 100,
+		PanelCount:                 panelCount,
+		ElectricalOffset:           electricalOffsetPct,
 		CostPerWatt:                costPerWatt,
 		SimplePaybackYears:         math.Round(simplePayback*100) / 100,
 		BreakEvenYear:              breakEvenYear,

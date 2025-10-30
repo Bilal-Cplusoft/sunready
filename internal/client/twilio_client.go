@@ -7,6 +7,7 @@ import (
 	"github.com/twilio/twilio-go"
 	twilio_api "github.com/twilio/twilio-go/rest/api/v2010"
     "github.com/Bilal-Cplusoft/sunready/utils"
+    "strings"
 )
 
 type TwilioClient struct {
@@ -33,13 +34,18 @@ func InitializeTwilio() *TwilioClient {
 	}
 }
 
-func (tc *TwilioClient) SendOTP(phoneNumber string) (string,error) {
+func (tc *TwilioClient) SendOTP(phoneNumber string) (string, error) {
+	if !strings.HasPrefix(phoneNumber, "+") {
+		phoneNumber = "+" + phoneNumber
+	}
+
 	otp, err := utils.GenerateOTP(6)
 	if err != nil {
-		return "",fmt.Errorf("failed to generate OTP: %w", err)
+		return "", fmt.Errorf("failed to generate OTP: %w", err)
 	}
 
 	body := fmt.Sprintf("Your SunReady verification code is %s", otp)
+
 	params := &twilio_api.CreateMessageParams{}
 	params.SetTo(phoneNumber)
 	params.SetFrom(tc.fromNumber)
@@ -47,9 +53,9 @@ func (tc *TwilioClient) SendOTP(phoneNumber string) (string,error) {
 
 	_, err = tc.client.Api.CreateMessage(params)
 	if err != nil {
-		return "",fmt.Errorf("failed to send OTP SMS: %w", err)
+		return "", fmt.Errorf("failed to send OTP SMS: %w", err)
 	}
 
 	fmt.Printf("OTP sent to %s: %s\n", phoneNumber, otp)
-	return otp,nil
+	return otp, nil
 }
