@@ -35,7 +35,6 @@ func runMigrations(db *gorm.DB) error {
 		model any
 		name  string
 	}{
-		{&models.Customer{}, "customers"},
 		{&models.User{}, "users"},
 		{&models.Project{}, "projects"},
 		{&models.Lead{}, "leads"},
