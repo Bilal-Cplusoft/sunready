@@ -198,10 +198,6 @@ func (h *LeadHandler) UpdateLead(w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
-
-	if address, ok := updates["address"].(string); ok {
-		lead.Address = address
-	}
 	if kwhUsage, ok := updates["kwh_usage"].(float64); ok {
 		lead.KwhUsage = kwhUsage
 	}

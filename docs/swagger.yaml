@@ -6,60 +6,6 @@ definitions:
         type: string
       user: {}
     type: object
-  handler.CreateCustomerRequest:
-    properties:
-      address:
-        example: 123 Main St, San Francisco, CA 94102
-        type: string
-      average_monthly_bill:
-        example: 150
-        type: number
-      city:
-        example: San Francisco
-        type: string
-      email:
-        example: john.smith@email.com
-        type: string
-      first_name:
-        example: John
-        type: string
-      home_ownership_type:
-        example: owner
-        type: string
-      last_name:
-        example: Smith
-        type: string
-      lead_id:
-        example: "12345"
-        type: string
-      notes:
-        example: Interested in 10kW system
-        type: string
-      phone_number:
-        example: +1-555-123-4567
-        type: string
-      preferred_contact_method:
-        example: email
-        type: string
-      property_type:
-        example: single_family
-        type: string
-      referral_code:
-        example: FRIEND2024
-        type: string
-      roof_type:
-        example: asphalt_shingle
-        type: string
-      state:
-        example: CA
-        type: string
-      utility_provider:
-        example: PG&E
-        type: string
-      zip_code:
-        example: "94102"
-        type: string
-    type: object
   handler.CreateOrUpdateProjectRequest:
     properties:
       address:
@@ -136,128 +82,6 @@ definitions:
         example: "0"
         type: string
     type: object
-  handler.UpdateCustomerRequest:
-    properties:
-      address:
-        example: 123 Main St, San Francisco, CA 94102
-        type: string
-      average_monthly_bill:
-        example: 150
-        type: number
-      city:
-        example: San Francisco
-        type: string
-      first_name:
-        example: John
-        type: string
-      home_ownership_type:
-        example: owner
-        type: string
-      is_active:
-        example: true
-        type: boolean
-      last_name:
-        example: Smith
-        type: string
-      notes:
-        example: Interested in 10kW system
-        type: string
-      phone_number:
-        example: +1-555-123-4567
-        type: string
-      preferred_contact_method:
-        example: email
-        type: string
-      property_type:
-        example: single_family
-        type: string
-      roof_type:
-        example: asphalt_shingle
-        type: string
-      state:
-        example: CA
-        type: string
-      status:
-        example: prospect
-        type: string
-      utility_provider:
-        example: PG&E
-        type: string
-      zip_code:
-        example: "94102"
-        type: string
-    type: object
-  handler.UpdateCustomerStatusRequest:
-    properties:
-      status:
-        example: qualified
-        type: string
-    type: object
-  models.Customer:
-    properties:
-      address:
-        example: 123 Main St, San Francisco, CA 94102
-        type: string
-      average_monthly_bill:
-        example: 150
-        type: number
-      city:
-        example: San Francisco
-        type: string
-      created_at:
-        type: string
-      email:
-        example: john.smith@email.com
-        type: string
-      first_name:
-        example: John
-        type: string
-      home_ownership_type:
-        example: owner
-        type: string
-      id:
-        type: integer
-      is_active:
-        example: true
-        type: boolean
-      last_name:
-        example: Smith
-        type: string
-      lead_id:
-        type: integer
-      notes:
-        example: Interested in 10kW system
-        type: string
-      phone_number:
-        example: +1-555-123-4567
-        type: string
-      preferred_contact_method:
-        example: email
-        type: string
-      property_type:
-        example: single_family
-        type: string
-      referral_code:
-        example: FRIEND2024
-        type: string
-      roof_type:
-        example: asphalt_shingle
-        type: string
-      state:
-        example: CA
-        type: string
-      status:
-        example: prospect
-        type: string
-      updated_at:
-        type: string
-      utility_provider:
-        example: PG&E
-        type: string
-      zip_code:
-        example: "94102"
-        type: string
-    type: object
   models.Project:
     properties:
       address:
@@ -281,11 +105,17 @@ definitions:
     properties:
       address:
         type: string
+      average_monthly_bill:
+        example: 150
+        type: number
       created_at:
         type: string
       email:
         type: string
       first_name:
+        type: string
+      home_ownership_type:
+        example: owner
         type: string
       id:
         type: integer
@@ -297,6 +127,9 @@ definitions:
         type: string
       user_type:
         $ref: '#/definitions/models.UserType'
+      utility_provider:
+        example: PG&E
+        type: string
     type: object
   models.UserType:
     enum:
@@ -311,25 +144,11 @@ definitions:
     - UserTypeGeneral
   service.CreateLead:
     properties:
-      address:
-        example: 123 Solar St, San Francisco, CA 94102
-        type: string
-      city:
-        type: string
       consumption:
         items:
           type: integer
         type: array
-      creator_id:
-        example: 1
-        type: integer
       hardware_type:
-        type: string
-      homeowner_email:
-        type: string
-      homeowner_name:
-        type: string
-      homeowner_phone:
         type: string
       kwh_usage:
         example: 12000
@@ -352,12 +171,6 @@ definitions:
       project_id:
         example: 1
         type: integer
-      sales_rep_email:
-        type: string
-      state:
-        type: string
-      street:
-        type: string
       system_size:
         example: 10.5
         type: number
@@ -365,26 +178,8 @@ definitions:
         type: integer
       unit:
         type: string
-      zip:
-        type: string
-    type: object
-  service.CustomerStats:
-    properties:
-      cancelled:
-        type: integer
-      completed:
-        type: integer
-      contracts:
-        type: integer
-      installations:
-        type: integer
-      proposals:
-        type: integer
-      prospects:
-        type: integer
-      qualified:
-        type: integer
-      total:
+      user_id:
+        example: 1
         type: integer
     type: object
   service.QuoteInput:
@@ -533,258 +328,6 @@ paths:
       summary: Register a new user
       tags:
       - auth
-  /api/customers:
-    get:
-      description: Retrieves a list of customers with optional pagination and filtering
-      parameters:
-      - default: 50
-        description: Limit number of results
-        in: query
-        name: limit
-        type: integer
-      - default: 0
-        description: Offset for pagination
-        in: query
-        name: offset
-        type: integer
-      - description: Filter by status
-        in: query
-        name: status
-        type: string
-      - description: Search customers by name, email, or address
-        in: query
-        name: search
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Customer'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: List customers
-      tags:
-      - customers
-    post:
-      consumes:
-      - application/json
-      description: Creates a new customer in the system
-      parameters:
-      - description: Customer data
-        in: body
-        name: customer
-        required: true
-        schema:
-          $ref: '#/definitions/handler.CreateCustomerRequest'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/models.Customer'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Create a new customer
-      tags:
-      - customers
-  /api/customers/{id}:
-    delete:
-      description: Deletes a customer by ID
-      parameters:
-      - description: Customer ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      responses:
-        "204":
-          description: No Content
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "404":
-          description: Not Found
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Delete customer
-      tags:
-      - customers
-    get:
-      description: Retrieves a customer by their ID
-      parameters:
-      - description: Customer ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Customer'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "404":
-          description: Not Found
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Get customer by ID
-      tags:
-      - customers
-    put:
-      consumes:
-      - application/json
-      description: Updates an existing customer
-      parameters:
-      - description: Customer ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Updated customer data
-        in: body
-        name: customer
-        required: true
-        schema:
-          $ref: '#/definitions/handler.UpdateCustomerRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Customer'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "404":
-          description: Not Found
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Update customer
-      tags:
-      - customers
-  /api/customers/{id}/status:
-    patch:
-      consumes:
-      - application/json
-      description: Updates the status of a customer
-      parameters:
-      - description: Customer ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Status update
-        in: body
-        name: status
-        required: true
-        schema:
-          $ref: '#/definitions/handler.UpdateCustomerStatusRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "404":
-          description: Not Found
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Update customer status
-      tags:
-      - customers
-  /api/customers/stats:
-    get:
-      description: Retrieves customer statistics by status
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/service.CustomerStats'
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Get customer statistics
-      tags:
-      - customers
   /api/leads:
     get:
       description: Retrieves a paginated list of leads

@@ -115,386 +115,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/customers": {
-            "get": {
-                "description": "Retrieves a list of customers with optional pagination and filtering",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "customers"
-                ],
-                "summary": "List customers",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "default": 50,
-                        "description": "Limit number of results",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "default": 0,
-                        "description": "Offset for pagination",
-                        "name": "offset",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Filter by status",
-                        "name": "status",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Search customers by name, email, or address",
-                        "name": "search",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Customer"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Creates a new customer in the system",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "customers"
-                ],
-                "summary": "Create a new customer",
-                "parameters": [
-                    {
-                        "description": "Customer data",
-                        "name": "customer",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handler.CreateCustomerRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/models.Customer"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/customers/stats": {
-            "get": {
-                "description": "Retrieves customer statistics by status",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "customers"
-                ],
-                "summary": "Get customer statistics",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/service.CustomerStats"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/customers/{id}": {
-            "get": {
-                "description": "Retrieves a customer by their ID",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "customers"
-                ],
-                "summary": "Get customer by ID",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Customer ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Customer"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Updates an existing customer",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "customers"
-                ],
-                "summary": "Update customer",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Customer ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Updated customer data",
-                        "name": "customer",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handler.UpdateCustomerRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Customer"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Deletes a customer by ID",
-                "tags": [
-                    "customers"
-                ],
-                "summary": "Delete customer",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Customer ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "No Content"
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/api/customers/{id}/status": {
-            "patch": {
-                "description": "Updates the status of a customer",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "customers"
-                ],
-                "summary": "Update customer status",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Customer ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Status update",
-                        "name": "status",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/handler.UpdateCustomerStatusRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/api/leads": {
             "get": {
                 "description": "Retrieves a paginated list of leads",
@@ -1338,79 +958,6 @@ const docTemplate = `{
                 "user": {}
             }
         },
-        "handler.CreateCustomerRequest": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string",
-                    "example": "123 Main St, San Francisco, CA 94102"
-                },
-                "average_monthly_bill": {
-                    "type": "number",
-                    "example": 150
-                },
-                "city": {
-                    "type": "string",
-                    "example": "San Francisco"
-                },
-                "email": {
-                    "type": "string",
-                    "example": "john.smith@email.com"
-                },
-                "first_name": {
-                    "type": "string",
-                    "example": "John"
-                },
-                "home_ownership_type": {
-                    "type": "string",
-                    "example": "owner"
-                },
-                "last_name": {
-                    "type": "string",
-                    "example": "Smith"
-                },
-                "lead_id": {
-                    "type": "string",
-                    "example": "12345"
-                },
-                "notes": {
-                    "type": "string",
-                    "example": "Interested in 10kW system"
-                },
-                "phone_number": {
-                    "type": "string",
-                    "example": "+1-555-123-4567"
-                },
-                "preferred_contact_method": {
-                    "type": "string",
-                    "example": "email"
-                },
-                "property_type": {
-                    "type": "string",
-                    "example": "single_family"
-                },
-                "referral_code": {
-                    "type": "string",
-                    "example": "FRIEND2024"
-                },
-                "roof_type": {
-                    "type": "string",
-                    "example": "asphalt_shingle"
-                },
-                "state": {
-                    "type": "string",
-                    "example": "CA"
-                },
-                "utility_provider": {
-                    "type": "string",
-                    "example": "PG\u0026E"
-                },
-                "zip_code": {
-                    "type": "string",
-                    "example": "94102"
-                }
-            }
-        },
         "handler.CreateOrUpdateProjectRequest": {
             "type": "object",
             "required": [
@@ -1519,173 +1066,6 @@ const docTemplate = `{
                 }
             }
         },
-        "handler.UpdateCustomerRequest": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string",
-                    "example": "123 Main St, San Francisco, CA 94102"
-                },
-                "average_monthly_bill": {
-                    "type": "number",
-                    "example": 150
-                },
-                "city": {
-                    "type": "string",
-                    "example": "San Francisco"
-                },
-                "first_name": {
-                    "type": "string",
-                    "example": "John"
-                },
-                "home_ownership_type": {
-                    "type": "string",
-                    "example": "owner"
-                },
-                "is_active": {
-                    "type": "boolean",
-                    "example": true
-                },
-                "last_name": {
-                    "type": "string",
-                    "example": "Smith"
-                },
-                "notes": {
-                    "type": "string",
-                    "example": "Interested in 10kW system"
-                },
-                "phone_number": {
-                    "type": "string",
-                    "example": "+1-555-123-4567"
-                },
-                "preferred_contact_method": {
-                    "type": "string",
-                    "example": "email"
-                },
-                "property_type": {
-                    "type": "string",
-                    "example": "single_family"
-                },
-                "roof_type": {
-                    "type": "string",
-                    "example": "asphalt_shingle"
-                },
-                "state": {
-                    "type": "string",
-                    "example": "CA"
-                },
-                "status": {
-                    "type": "string",
-                    "example": "prospect"
-                },
-                "utility_provider": {
-                    "type": "string",
-                    "example": "PG\u0026E"
-                },
-                "zip_code": {
-                    "type": "string",
-                    "example": "94102"
-                }
-            }
-        },
-        "handler.UpdateCustomerStatusRequest": {
-            "type": "object",
-            "properties": {
-                "status": {
-                    "type": "string",
-                    "example": "qualified"
-                }
-            }
-        },
-        "models.Customer": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "type": "string",
-                    "example": "123 Main St, San Francisco, CA 94102"
-                },
-                "average_monthly_bill": {
-                    "type": "number",
-                    "example": 150
-                },
-                "city": {
-                    "type": "string",
-                    "example": "San Francisco"
-                },
-                "created_at": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string",
-                    "example": "john.smith@email.com"
-                },
-                "first_name": {
-                    "type": "string",
-                    "example": "John"
-                },
-                "home_ownership_type": {
-                    "type": "string",
-                    "example": "owner"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "is_active": {
-                    "type": "boolean",
-                    "example": true
-                },
-                "last_name": {
-                    "type": "string",
-                    "example": "Smith"
-                },
-                "lead_id": {
-                    "type": "integer"
-                },
-                "notes": {
-                    "type": "string",
-                    "example": "Interested in 10kW system"
-                },
-                "phone_number": {
-                    "type": "string",
-                    "example": "+1-555-123-4567"
-                },
-                "preferred_contact_method": {
-                    "type": "string",
-                    "example": "email"
-                },
-                "property_type": {
-                    "type": "string",
-                    "example": "single_family"
-                },
-                "referral_code": {
-                    "type": "string",
-                    "example": "FRIEND2024"
-                },
-                "roof_type": {
-                    "type": "string",
-                    "example": "asphalt_shingle"
-                },
-                "state": {
-                    "type": "string",
-                    "example": "CA"
-                },
-                "status": {
-                    "type": "string",
-                    "example": "prospect"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "utility_provider": {
-                    "type": "string",
-                    "example": "PG\u0026E"
-                },
-                "zip_code": {
-                    "type": "string",
-                    "example": "94102"
-                }
-            }
-        },
         "models.Project": {
             "type": "object",
             "properties": {
@@ -1721,6 +1101,10 @@ const docTemplate = `{
                 "address": {
                     "type": "string"
                 },
+                "average_monthly_bill": {
+                    "type": "number",
+                    "example": 150
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -1729,6 +1113,10 @@ const docTemplate = `{
                 },
                 "first_name": {
                     "type": "string"
+                },
+                "home_ownership_type": {
+                    "type": "string",
+                    "example": "owner"
                 },
                 "id": {
                     "type": "integer"
@@ -1744,6 +1132,10 @@ const docTemplate = `{
                 },
                 "user_type": {
                     "$ref": "#/definitions/models.UserType"
+                },
+                "utility_provider": {
+                    "type": "string",
+                    "example": "PG\u0026E"
                 }
             }
         },
@@ -1764,33 +1156,13 @@ const docTemplate = `{
         "service.CreateLead": {
             "type": "object",
             "properties": {
-                "address": {
-                    "type": "string",
-                    "example": "123 Solar St, San Francisco, CA 94102"
-                },
-                "city": {
-                    "type": "string"
-                },
                 "consumption": {
                     "type": "array",
                     "items": {
                         "type": "integer"
                     }
                 },
-                "creator_id": {
-                    "type": "integer",
-                    "example": 1
-                },
                 "hardware_type": {
-                    "type": "string"
-                },
-                "homeowner_email": {
-                    "type": "string"
-                },
-                "homeowner_name": {
-                    "type": "string"
-                },
-                "homeowner_phone": {
                     "type": "string"
                 },
                 "kwh_usage": {
@@ -1822,15 +1194,6 @@ const docTemplate = `{
                     "type": "integer",
                     "example": 1
                 },
-                "sales_rep_email": {
-                    "type": "string"
-                },
-                "state": {
-                    "type": "string"
-                },
-                "street": {
-                    "type": "string"
-                },
                 "system_size": {
                     "type": "number",
                     "example": 10.5
@@ -1841,37 +1204,9 @@ const docTemplate = `{
                 "unit": {
                     "type": "string"
                 },
-                "zip": {
-                    "type": "string"
-                }
-            }
-        },
-        "service.CustomerStats": {
-            "type": "object",
-            "properties": {
-                "cancelled": {
-                    "type": "integer"
-                },
-                "completed": {
-                    "type": "integer"
-                },
-                "contracts": {
-                    "type": "integer"
-                },
-                "installations": {
-                    "type": "integer"
-                },
-                "proposals": {
-                    "type": "integer"
-                },
-                "prospects": {
-                    "type": "integer"
-                },
-                "qualified": {
-                    "type": "integer"
-                },
-                "total": {
-                    "type": "integer"
+                "user_id": {
+                    "type": "integer",
+                    "example": 1
                 }
             }
         },

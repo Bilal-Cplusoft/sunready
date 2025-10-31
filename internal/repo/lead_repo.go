@@ -110,3 +110,22 @@ func (r *LeadRepo) List(ctx context.Context, customerID *int, creatorID *int, li
 
 	return leads, total, nil
 }
+
+func (r *LeadRepo) GetLeadWithUserByUserID(ctx context.Context, userID int) (*models.Lead, error) {
+	var lead models.Lead
+	err := r.db.Preload("User").Where("user_id = ?", userID).First(&lead).Error
+	if err != nil {
+		return nil, err
+	}
+	return &lead, nil
+}
+
+
+func (r *LeadRepo) GetLeadWithProjectByProjectID(ctx context.Context, projectID int) (*models.Lead, error) {
+	var lead models.Lead
+	err := r.db.Preload("User").Where("project_id = ?", projectID).First(&lead).Error
+	if err != nil {
+		return nil, err
+	}
+	return &lead, nil
+}

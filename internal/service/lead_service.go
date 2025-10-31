@@ -24,23 +24,14 @@ type LeadService struct {
 
 type CreateLead struct {
 	ProjectID       int     `json:"project_id" example:"1"`
-	CreatorID        *int    `json:"creator_id,omitempty" example:"1"`
+	UserId        *int    `json:"user_id,omitempty" example:"1"`
 	Latitude         float64 `json:"latitude" example:"37.7749"`
 	Longitude        float64 `json:"longitude" example:"-122.4194"`
-	Address          string  `json:"address" example:"123 Solar St, San Francisco, CA 94102"`
-	Street           *string `json:"street,omitempty"`
-	City             *string `json:"city,omitempty"`
-	State            *string `json:"state,omitempty"`
-	Zip              *string `json:"zip,omitempty"`
-	HomeownerName    *string `json:"homeowner_name,omitempty"`
-	HomeownerEmail   *string `json:"homeowner_email,omitempty"`
-	HomeownerPhone   *string `json:"homeowner_phone,omitempty"`
 	SystemSize       float64 `json:"system_size" example:"10.5"`
 	PanelCount       int     `json:"panel_count" example:"30"`
 	HardwareType     *string `json:"hardware_type,omitempty"`
 	KwhUsage         float64 `json:"kwh_usage" example:"12000"`
 	Consumption      []int   `json:"consumption,omitempty"`
-	SalesRepEmail     *string `json:"sales_rep_email,omitempty"`
 	LseId             int     `json:"lse_id"`
 	Period            string  `json:"period"`
 	TargetSolarOffset int     `json:"target_solar_offset"`
@@ -82,24 +73,30 @@ func (s *LeadService) CreateLead(ctx context.Context, req CreateLead, userID int
 
 	lead := models.Lead{
 			ProjectID: projectID,
-			CreatorID:  &userID,
+			UserID:  &userID,
 			Latitude:   req.Latitude,
 			Longitude:  req.Longitude,
-			Address:    req.Address,
 			KwhUsage:   req.KwhUsage,
 			SystemSize: req.SystemSize,
 			PanelCount: req.PanelCount,
-			Source:     0,
-			State:      0,
 		}
+		if _, err := s.leadRepo.GetLeadWithProjectByProjectID(ctx, projectID); err != nil {
+			return nil, fmt.Errorf("project not found: %w", err)
+        }
+        if _, err := s.leadRepo.GetLeadWithUserByUserID(ctx, userID); err != nil {
+			return nil, fmt.Errorf("user not found: %w", err)
+        }
 		if err := s.leadRepo.Create(ctx, &lead); err != nil {
 			return nil, fmt.Errorf("failed to create lead: %w", err)
 		}
-
+        Lead,err := s.leadRepo.GetLeadWithUserByUserID(ctx,userID)
+        if err != nil {
+            return nil, fmt.Errorf("failed to get lead with user by user id: %w", err)
+        }
 		if s.genabilityClient != nil {
 			accountInput := client.Account{
 				Address: client.AccountAddress{
-					String:    lead.Address,
+					String:    *Lead.User.Address,
 					Latitude:  lead.Latitude,
 					Longitude: lead.Longitude,
 				},

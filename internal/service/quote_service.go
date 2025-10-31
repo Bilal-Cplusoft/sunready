@@ -58,8 +58,8 @@ func (s *QuoteService) CalculateQuote(input QuoteInput) (*QuoteResult, error) {
 	if input.MonthlyElectricBill <= 0 {
 		return nil, fmt.Errorf("monthly electric bill must be greater than 0")
 	}
-	costPerWatt := 3.00
-	utilityRate := 0.13
+	costPerWatt := 2.50
+	utilityRate := 0.25
 	annualIncrease := 0.03
 	taxCredit := 0.30
 	interestRate := 0.0699
