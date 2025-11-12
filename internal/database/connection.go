@@ -39,6 +39,9 @@ func runMigrations(db *gorm.DB) error {
 		{&models.Project{}, "projects"},
 		{&models.Lead{}, "leads"},
 		{&models.House{},"house"},
+		{&models.Storage{},"storages"},
+		{&models.Panel{},"panels"},
+		{&models.Inverter{},"inverters"},
 	}
 	for _, table := range tables {
 		if !db.Migrator().HasTable(table.name) {

@@ -50,6 +50,7 @@ type Lead struct {
 	AnnualProduction float64 `json:"annual_production" gorm:"column:annual_production" example:"13000"`
     UtilityID     *int   `json:"utility_id" gorm:"column:utility_id" example:"1"`
     TariffID      *int   `json:"tariff_id" gorm:"column:tariff_id" example:"1"`
+    ExternalID    *int   `json:"external_id" gorm:"column:external_id" example:"1"`
 }
 
 func (Lead) TableName() string {

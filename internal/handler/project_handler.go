@@ -57,7 +57,6 @@ func (h *ProjectHandler) Create(w http.ResponseWriter, r *http.Request) {
 			}
 			return "draft"
 		}(),
-		Address: req.Address,
 	}
 
 	if err := h.projectService.Create(r.Context(), project); err != nil {
@@ -128,7 +127,6 @@ func (h *ProjectHandler) Update(w http.ResponseWriter, r *http.Request) {
 		Name: project.Name,
 		Description: project.Description,
 		UserID:  project.UserID,
-		Address: project.Address,
 		Status: *project.Status,
 	}
 

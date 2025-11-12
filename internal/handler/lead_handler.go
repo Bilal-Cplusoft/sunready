@@ -102,6 +102,39 @@ func (h *LeadHandler) GetLead(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, lead)
 }
 
+// GetMeshFiles godoc
+// @Summary      Get 3D mesh files for a lead
+// @Description  Retrieves the 3D mesh files associated with a specific lead ID
+// @Tags         Leads
+// @Accept       json
+// @Produce      json
+// @Param        id   path      int  true  "Lead ID"
+// @Success      200  {object}  client.ProfilesFiles3DResponse
+// @Failure      400  {object}  ErrorResponse  "Invalid lead ID"
+// @Failure      404  {object}  ErrorResponse  "Lead not found"
+// @Failure      500  {object}  ErrorResponse  "Internal server error"
+// @Router       /leads/{id}/mesh-files [get]
+func (h *LeadHandler) GetMeshFiles(w http.ResponseWriter, r *http.Request) {
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		respondError(w, http.StatusBadRequest, "Invalid lead ID")
+		return
+	}
+	lead, err := h.leadRepo.GetByID(r.Context(), id)
+	if err != nil {
+		if err == models.ErrLeadNotFound {
+			respondError(w, http.StatusNotFound, "Lead not found")
+			return
+		}
+		log.Printf("Failed to get lead: %v", err)
+		respondError(w, http.StatusInternalServerError, "Failed to get lead")
+		return
+	}
+	files,err := h.leadService.GetMeshFiles(r.Context(),*lead.ExternalID)
+	respondJSON(w, http.StatusOK, files)
+}
+
 // ListLeads godoc
 // @Summary List leads
 // @Description Retrieves a paginated list of leads

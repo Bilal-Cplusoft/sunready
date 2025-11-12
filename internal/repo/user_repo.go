@@ -64,3 +64,11 @@ func (r *UserRepo) FindByIDs(ctx context.Context, ids []int) ([]*models.User, er
 	err := r.db.WithContext(ctx).Where("id IN ?", ids).Find(&users).Error
 	return users, err
 }
+
+func (r *UserRepo) ExistsByID(ctx context.Context, id int) (bool, error) {
+	var count int64
+	if err := r.db.Model(&models.User{}).Where("id = ?", id).Count(&count).Error; err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}

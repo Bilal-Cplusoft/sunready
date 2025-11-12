@@ -17,14 +17,19 @@ func NewAuthHandler(authService *service.AuthService,sendGridClient *client.Send
 }
 
 type RegisterRequest struct {
-	Email     string `json:"email" example:"user@example.com"`
-	Password  string `json:"password" example:"password123"`
-	FirstName string `json:"first_name" example:"John"`
-	LastName  string `json:"last_name" example:"Doe"`
-	Address   string `json:"address" example:"123 Main St, Anytown, USA"`
-	Phone     string `json:"phone" example:"555-123-4567"`
-	UserType  string `json:"user_type" example:"0"`
+	Email      string `json:"email" example:"user@example.com"`
+	Password   string `json:"password" example:"password123"`
+	FirstName  string `json:"first_name" example:"John"`
+	LastName   string `json:"last_name" example:"Doe"`
+	Street     string `json:"street" example:"123 Main St"`
+	City       string `json:"city" example:"Anytown"`
+	State      string `json:"state" example:"CA"`
+	PostalCode string `json:"postal_code" example:"12345"`
+	Country    string `json:"country" example:"USA"`
+	Phone      string `json:"phone" example:"555-123-4567"`
+	UserType   string `json:"user_type" example:"0"`
 }
+
 
 type LoginRequest struct {
 	Email    string `json:"email" example:"user@example.com"`
@@ -53,11 +58,25 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		respondError(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
-	user, err := h.authService.Register(r.Context(), req.Email, req.Password, req.FirstName, req.LastName,  req.Address, req.Phone, req.UserType)
+	user, err := h.authService.Register(
+	    r.Context(),
+	    req.Email,
+	    req.Password,
+	    req.FirstName,
+	    req.LastName,
+	    req.Street,
+	    req.City,
+	    req.State,
+	    req.PostalCode,
+	    req.Country,
+	    req.Phone,
+	    req.UserType,
+	)
 	if err != nil {
-		respondError(w, http.StatusBadRequest, err.Error())
-		return
+	    respondError(w, http.StatusBadRequest, err.Error())
+	    return
 	}
+
 	token, err := h.authService.GenerateToken(user.ID, int(user.UserType))
 	if err != nil {
 		respondError(w, http.StatusInternalServerError, "Failed to generate token")

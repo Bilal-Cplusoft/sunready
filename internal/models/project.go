@@ -10,7 +10,6 @@ type Project struct {
 	Name        string    `json:"name" gorm:"column:name"`
 	Description *string   `json:"description" gorm:"column:description"`
 	Status      string    `json:"status" gorm:"column:status;default:'draft'"`
-	Address     *string   `json:"address" gorm:"column:address"`
 }
 
 func (Project) TableName() string {

@@ -30,7 +30,12 @@ type Claims struct {
 	jwt.RegisteredClaims
 }
 
-func (s *AuthService) Register(ctx context.Context, email, password, firstName, lastName string, address, phoneNumber string, userType string) (*models.User, error) {
+func (s *AuthService) Register(
+    ctx context.Context,
+    email, password, firstName, lastName string,
+    street, city, state, postalCode, country, phoneNumber string,
+    userType string,
+) (*models.User, error) {
 	existingUser, _ := s.userRepo.GetByEmail(ctx, email)
 	if existingUser != nil {
 		return nil, errors.New("user already exists")
@@ -43,11 +48,15 @@ func (s *AuthService) Register(ctx context.Context, email, password, firstName, 
 	hashedStr := string(hashedPassword)
 	user := &models.User{
 		Email:       email,
-		Password:    &hashedStr,
-		FirstName:   &firstName,
-		LastName:    &lastName,
-		Address:     &address,
-		PhoneNumber: &phoneNumber,
+		Password:    hashedStr,
+		FirstName:   firstName,
+		LastName:    lastName,
+		Street:      street,
+		City:        city,
+		State:       state,
+		PostalCode:  postalCode,
+		Country:     country,
+		PhoneNumber: phoneNumber,
 		UserType: models.UserType(usertype),
 	}
 	if err := s.userRepo.Create(ctx, user); err != nil {
@@ -63,11 +72,11 @@ func (s *AuthService) Login(ctx context.Context, email, password string) (string
 	}
 
 
-	if user.Password == nil {
+	if user.Password == "" {
 		return "", nil, errors.New("invalid credentials")
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(*user.Password), []byte(password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		return "", nil, errors.New("invalid credentials")
 	}
 

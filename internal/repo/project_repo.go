@@ -57,3 +57,11 @@ func (r *ProjectRepo) ListByUser(ctx context.Context, userID int, limit, offset 
 		Find(&projects).Error
 	return projects, err
 }
+
+func (r *ProjectRepo) ExistsByID(ctx context.Context, id int) (bool, error) {
+	var count int64
+	if err := r.db.Model(&models.Project{}).Where("id = ?", id).Count(&count).Error; err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}

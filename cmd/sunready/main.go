@@ -4,17 +4,18 @@ import (
 	"log"
 	"net/http"
 	"os"
-    "github.com/Bilal-Cplusoft/sunready/internal/middleware"
+    "io/ioutil"
+	_ "github.com/Bilal-Cplusoft/sunready/docs"
 	"github.com/Bilal-Cplusoft/sunready/internal/client"
 	"github.com/Bilal-Cplusoft/sunready/internal/database"
 	"github.com/Bilal-Cplusoft/sunready/internal/handler"
+	"github.com/Bilal-Cplusoft/sunready/internal/middleware"
 	"github.com/Bilal-Cplusoft/sunready/internal/repo"
 	"github.com/Bilal-Cplusoft/sunready/internal/service"
 	"github.com/go-chi/chi/v5"
 	ChiMiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/joho/godotenv"
-	_ "github.com/Bilal-Cplusoft/sunready/docs"
 	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
@@ -39,6 +40,7 @@ func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found, using system environment variables")
 	}
+
 	databaseURL, jwtSecret, port := os.Getenv("DATABASE_URL"), os.Getenv("JWT_SECRET"), os.Getenv("PORT")
 	if databaseURL == "" {
 		log.Fatal("DATABASE_URL environment variable is required")
@@ -53,26 +55,41 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
+	// seed hardware options for now
+	sqlBytes, err := ioutil.ReadFile("db/init.sql")
+	if err != nil {
+		log.Fatalf("Failed to read init.sql: %v", err)
+	}
+	sqlContent := string(sqlBytes)
+	if err := db.Exec(sqlContent).Error; err != nil {
+		log.Fatalf("Failed to execute init.sql: %v", err)
+	}
 
 	userRepo := repo.NewUserRepo(db)
 	projectRepo := repo.NewProjectRepo(db)
 	quoteRepo := repo.NewQuoteRepo(db)
 	leadRepo := repo.NewLeadRepo(db)
 	houseRepo := repo.NewHouseRepo(db)
+	hardwareRepo := repo.NewHardwareRepo(db)
 
-	twilioClient,sendGridClient := client.InitializeTwilio(),client.InitializeSendGrid()
+	twilioClient, sendGridClient := client.InitializeTwilio(), client.InitializeSendGrid()
+	lightFusionURL, lightFusionEmail, lightFusionPassword := os.Getenv("LIGHTFUSION_API"), os.Getenv("LIGHTFUSION_EMAIL"), os.Getenv("LIGHTFUSION_PASSWORD")
+	lightFusionClient := client.NewLightFusionClient(lightFusionURL,lightFusionEmail, lightFusionPassword)
 
 	authService := service.NewAuthService(userRepo, jwtSecret)
 	userService := service.NewUserService(userRepo)
 	projectService := service.NewProjectService(projectRepo)
 	quoteService := service.NewQuoteService(quoteRepo)
-	leadService := service.NewLeadService(leadRepo,houseRepo)
-	authHandler := handler.NewAuthHandler(authService,sendGridClient)
+	leadService := service.NewLeadService(leadRepo, houseRepo,lightFusionClient,projectRepo,userRepo)
+
+
+	authHandler := handler.NewAuthHandler(authService, sendGridClient)
 	userHandler := handler.NewUserHandler(userService)
 	projectHandler := handler.NewProjectHandler(projectService)
 	quoteHandler := handler.NewQuoteHandler(quoteService)
-	leadHandler := handler.NewLeadHandler(leadRepo,leadService,userRepo)
-	otpHandler := handler.NewOtpHandler(twilioClient,sendGridClient)
+	leadHandler := handler.NewLeadHandler(leadRepo, leadService, userRepo)
+	otpHandler := handler.NewOtpHandler(twilioClient, sendGridClient)
+	hardwareHandler := handler.NewHardwareHandler(hardwareRepo)
 
 	r := chi.NewRouter()
 
@@ -87,34 +104,40 @@ func main() {
 		MaxAge:           300,
 	}))
 	r.Group(func(user chi.Router) {
-     user.Use(middleware.AuthMiddleware(authService))
-     user.Post("/api/leads", leadHandler.CreateLead)
-	 user.Post("/api/projects", projectHandler.Create)
-	 user.Get("/api/projects/{id}", projectHandler.GetByID)
-	 user.Put("/api/projects/{id}", projectHandler.Update)
-	 user.Delete("/api/projects/{id}", projectHandler.Delete)
-	 user.Post("/api/quote", quoteHandler.GetQuote)
-    })
+		user.Use(middleware.AuthMiddleware(authService))
+		user.Post("/api/leads", leadHandler.CreateLead)
+		user.Get("/api/leads/{id}/mesh-files", leadHandler.GetMeshFiles)
+		user.Get("/api/leads/{id}", leadHandler.GetLead)
+		user.Put("/api/leads/{id}", leadHandler.UpdateLead)
+		user.Post("/api/projects", projectHandler.Create)
+		user.Get("/api/projects/{id}", projectHandler.GetByID)
+		user.Put("/api/projects/{id}", projectHandler.Update)
+		user.Delete("/api/projects/{id}", projectHandler.Delete)
+		user.Post("/api/quote", quoteHandler.GetQuote)
+	})
 	r.Group(func(admin chi.Router) {
 		admin.Use(middleware.AdminMiddleware(authService))
 		admin.Get("/api/users/{id}", userHandler.GetByID)
 		admin.Put("/api/users/{id}", userHandler.Update)
 		admin.Delete("/api/users/{id}", userHandler.Delete)
 		admin.Get("/api/users", userHandler.List)
+		admin.Post("/api/hardware/panel",hardwareHandler.AddPanel)
+		admin.Post("/api/hardware/storage",hardwareHandler.AddStorage)
+		admin.Post("/api/hardware/inverter",hardwareHandler.AddInverter)
+		admin.Get("/api/leads", leadHandler.ListLeads)
+		admin.Delete("/api/leads/{id}", leadHandler.DeleteLead)
 	})
 
 	r.Post("/api/auth/register", authHandler.Register)
 	r.Post("/api/auth/login", authHandler.Login)
 	r.Get("/api/projects/user", projectHandler.ListByUser)
 
+	r.Get("/api/otp/send", otpHandler.SendOTP)
+	r.Get("/api/otp/verify", otpHandler.VerifyOTP)
 
-	r.Get("/api/leads", leadHandler.ListLeads)
-	r.Get("/api/leads/{id}", leadHandler.GetLead)
-	r.Put("/api/leads/{id}", leadHandler.UpdateLead)
-	r.Delete("/api/leads/{id}", leadHandler.DeleteLead)
-
-	r.Get("/api/otp/send",otpHandler.SendOTP)
-	r.Get("/api/otp/verify",otpHandler.VerifyOTP)
+	r.Get("/api/hardware/panels", hardwareHandler.ListPanels)
+	r.Get("/api/hardware/storages", hardwareHandler.ListStorages)
+	r.Get("/api/hardware/inverters", hardwareHandler.ListInverters)
 
 	fileServer := http.StripPrefix("/media/", http.FileServer(http.Dir("./media")))
 	r.Handle("/media/*", fileServer)

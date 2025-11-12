@@ -1,4 +1,31 @@
 definitions:
+  client.ProfilesFiles3DResponse:
+    properties:
+      downloaded:
+        type: boolean
+      errors:
+        items:
+          type: string
+        type: array
+      jpg_path:
+        type: string
+      jpg_url:
+        type: string
+      mtl_path:
+        type: string
+      mtl_url:
+        type: string
+      obj_path:
+        type: string
+      obj_url:
+        type: string
+      ply_path:
+        type: string
+      ply_url:
+        type: string
+      project_id:
+        type: integer
+    type: object
   handler.AuthResponse:
     properties:
       token:
@@ -82,6 +109,40 @@ definitions:
         example: "0"
         type: string
     type: object
+  models.Inverter:
+    properties:
+      capacity:
+        type: number
+      created_at:
+        type: string
+      id:
+        type: integer
+      manufacturer:
+        type: string
+      model:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  models.Panel:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      longside:
+        type: number
+      manufacturer:
+        type: string
+      model:
+        type: string
+      shortside:
+        type: number
+      updated_at:
+        type: string
+      wattage:
+        type: number
+    type: object
   models.Project:
     properties:
       address:
@@ -100,6 +161,21 @@ definitions:
         type: string
       user_id:
         type: integer
+    type: object
+  models.Storage:
+    properties:
+      capacity:
+        type: number
+      created_at:
+        type: string
+      id:
+        type: integer
+      manufacturer:
+        type: string
+      model:
+        type: string
+      updated_at:
+        type: string
     type: object
   models.User:
     properties:
@@ -328,6 +404,168 @@ paths:
       summary: Register a new user
       tags:
       - auth
+  /api/hardware/inverters:
+    get:
+      description: Get a list of all inverters
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Inverter'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List all inverters
+      tags:
+      - Hardware
+    post:
+      consumes:
+      - application/json
+      description: Add a new inverter record
+      parameters:
+      - description: Inverter payload
+        in: body
+        name: inverter
+        required: true
+        schema:
+          $ref: '#/definitions/models.Inverter'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Inverter'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Add a new inverter
+      tags:
+      - Hardware
+  /api/hardware/panels:
+    get:
+      description: Get a list of all panels
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Panel'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List all panels
+      tags:
+      - Hardware
+    post:
+      consumes:
+      - application/json
+      description: Add a new panel record
+      parameters:
+      - description: Panel payload
+        in: body
+        name: panel
+        required: true
+        schema:
+          $ref: '#/definitions/models.Panel'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Panel'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Add a new panel
+      tags:
+      - Hardware
+  /api/hardware/storages:
+    get:
+      description: Get a list of all storage units
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Storage'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List all storages
+      tags:
+      - Hardware
+    post:
+      consumes:
+      - application/json
+      description: Add a new storage record
+      parameters:
+      - description: Storage payload
+        in: body
+        name: storage
+        required: true
+        schema:
+          $ref: '#/definitions/models.Storage'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Storage'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Add a new storage unit
+      tags:
+      - Hardware
   /api/leads:
     get:
       description: Retrieves a paginated list of leads
@@ -882,6 +1120,39 @@ paths:
       summary: Update user
       tags:
       - users
+  /leads/{id}/mesh-files:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the 3D mesh files associated with a specific lead ID
+      parameters:
+      - description: Lead ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/client.ProfilesFiles3DResponse'
+        "400":
+          description: Invalid lead ID
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: Lead not found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Get 3D mesh files for a lead
+      tags:
+      - Leads
 securityDefinitions:
   BearerAuth:
     description: Type "Bearer" followed by a space and JWT token.
