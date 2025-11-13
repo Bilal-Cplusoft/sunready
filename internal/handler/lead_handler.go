@@ -140,25 +140,19 @@ func (h *LeadHandler) GetMeshFiles(w http.ResponseWriter, r *http.Request) {
 // @Description Retrieves a paginated list of leads
 // @Tags leads
 // @Produce json
-// @Param customer_id query int false "Filter by customer ID"
-// @Param creator_id query int false "Filter by creator ID"
+// @Param user_id query int false "Filter by creator ID"
 // @Param limit query int false "Number of items per page" default(20)
 // @Param offset query int false "Number of items to skip" default(0)
 // @Success 200 {object} map[string]interface{}
-// @Router /api/leads [get]
+// @Router /admin/leads [get]
 func (h *LeadHandler) ListLeads(w http.ResponseWriter, r *http.Request) {
-	var creatorID *int
+	var userId *int
 	limit := 20
 	offset := 0
-	var customerID *int
-	if customerIDStr := r.URL.Query().Get("customer_id"); customerIDStr != "" {
-		if id, err := strconv.Atoi(customerIDStr); err == nil {
-			customerID = &id
-		}
-	}
-	if creatorIDStr := r.URL.Query().Get("creator_id"); creatorIDStr != "" {
-		if id, err := strconv.Atoi(creatorIDStr); err == nil {
-			creatorID = &id
+
+	if userIDStr := r.URL.Query().Get("user_id"); userIDStr != "" {
+		if id, err := strconv.Atoi(userIDStr); err == nil {
+			userId = &id
 		}
 	}
 	if limitStr := r.URL.Query().Get("limit"); limitStr != "" {
@@ -177,7 +171,7 @@ func (h *LeadHandler) ListLeads(w http.ResponseWriter, r *http.Request) {
 	var total int64
 	var err error
 
-	leads, total, err = h.leadRepo.List(r.Context(), customerID, creatorID, limit, offset)
+	leads, total, err = h.leadRepo.List(r.Context(),  userId, limit, offset)
 	if err != nil {
 		log.Printf("Failed to list leads: %v", err)
 		respondError(w, http.StatusInternalServerError, "Failed to list leads")
@@ -261,7 +255,7 @@ func (h *LeadHandler) UpdateLead(w http.ResponseWriter, r *http.Request) {
 // @Success 204
 // @Failure 404 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
-// @Router /api/leads/{id} [delete]
+// @Router /admin/leads/{id} [delete]
 func (h *LeadHandler) DeleteLead(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)

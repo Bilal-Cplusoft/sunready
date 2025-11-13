@@ -81,17 +81,14 @@ func (r *LeadRepo) Delete(ctx context.Context, id int) error {
 }
 
 
-func (r *LeadRepo) List(ctx context.Context, customerID *int, creatorID *int, limit, offset int) ([]*models.Lead, int64, error) {
+func (r *LeadRepo) List(ctx context.Context, userId *int, limit, offset int) ([]*models.Lead, int64, error) {
 	var leads []*models.Lead
 	var total int64
 
 	query := r.db.WithContext(ctx).Model(&models.Lead{})
 
-	if customerID != nil {
-		query = query.Where("customer_id = ?", *customerID)
-	}
-	if creatorID != nil {
-		query = query.Where("creator_id = ?", *creatorID)
+	if userId != nil {
+		query = query.Where("creator_id = ?", *userId)
 	}
 
 	if err := query.Count(&total).Error; err != nil {

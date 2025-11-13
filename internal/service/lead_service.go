@@ -18,7 +18,6 @@ type CreateLeadResponse struct {
 
 type LeadService struct {
 	leadRepo          *repo.LeadRepo
-	projectRepo       *repo.ProjectRepo
 	userRepo          *repo.UserRepo
 	houseRepo         *repo.HouseRepo
 	genabilityClient  *client.Agent
@@ -35,14 +34,15 @@ type CreateLead struct {
 	HardwareType      *string `json:"hardware_type,omitempty"`
 	KwhUsage          float64 `json:"kwh_usage" example:"12000"`
 	Consumption       []int   `json:"consumption,omitempty"`
-	LseId             int     `json:"lse_id"`
+	PanelId           int     `json:"panel_id" example:"1"`
+	InverterId        int     `json:"inverter_id" example:"1"`
 	Period            string  `json:"period"`
 	TargetSolarOffset int     `json:"target_solar_offset"`
 	Mode              *string `json:"mode,omitempty"`
 	Unit              string  `json:"unit"`
 }
 
-func NewLeadService(leadRepo *repo.LeadRepo, houseRepo *repo.HouseRepo, lightFusionClient *client.LightFusionClient, projectRepo *repo.ProjectRepo, userRepo *repo.UserRepo) *LeadService {
+func NewLeadService(leadRepo *repo.LeadRepo, houseRepo *repo.HouseRepo, lightFusionClient *client.LightFusionClient, userRepo *repo.UserRepo) *LeadService {
 	var genClient *client.Agent
 
 	defer func() {
@@ -57,17 +57,12 @@ func NewLeadService(leadRepo *repo.LeadRepo, houseRepo *repo.HouseRepo, lightFus
 		leadRepo:          leadRepo,
 		houseRepo:         houseRepo,
 		genabilityClient:  genClient,
-		projectRepo:       projectRepo,
 		userRepo:          userRepo,
 		lightFusionClient: lightFusionClient,
 	}
 }
 
 func (s *LeadService) CreateLead(ctx context.Context, req CreateLead, userID int, projectID int) (*CreateLeadResponse, error) {
-	if _, err := s.projectRepo.ExistsByID(ctx, projectID); err != nil {
-		return nil, fmt.Errorf("project not found: %w", err)
-	}
-
 	if _, err := s.userRepo.ExistsByID(ctx, userID); err != nil {
 		return nil, fmt.Errorf("user not found: %w", err)
 	}
@@ -88,6 +83,8 @@ func (s *LeadService) CreateLead(ctx context.Context, req CreateLead, userID int
 		PanelCount: req.PanelCount,
 		Consumption: req.Consumption,
 		TargetSolarOffset: req.TargetSolarOffset,
+		PanelId: req.PanelId,
+		InverterId: req.InverterId,
 	}
 	User, err := s.userRepo.GetByID(ctx, userID)
 	if err != nil {

@@ -82,7 +82,7 @@ func (h *HardwareHandler) ListInverters(w http.ResponseWriter, r *http.Request) 
 // @Success 201 {object} models.Panel
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/hardware/panels [post]
+// @Router /admin/hardware/panels [post]
 func (h *HardwareHandler) AddPanel(w http.ResponseWriter, r *http.Request) {
 	var panel models.Panel
 	if err := json.NewDecoder(r.Body).Decode(&panel); err != nil {
@@ -136,7 +136,7 @@ func (h *HardwareHandler) AddInverter(w http.ResponseWriter, r *http.Request) {
 // @Success 201 {object} models.Storage
 // @Failure 400 {object} map[string]string
 // @Failure 500 {object} map[string]string
-// @Router /api/hardware/storages [post]
+// @Router /admin/hardware/storages [post]
 func (h *HardwareHandler) AddStorage(w http.ResponseWriter, r *http.Request) {
 	var storage models.Storage
 	if err := json.NewDecoder(r.Body).Decode(&storage); err != nil {

@@ -29,7 +29,7 @@ func NewUserHandler(userService *service.UserService) *UserHandler {
 // @Success      200  {object}  models.User
 // @Failure      400  {object}  map[string]string  "Invalid user ID"
 // @Failure      404  {object}  map[string]string  "User not found"
-// @Router       /api/users/{id} [get]
+// @Router       /admin/users/{id} [get]
 func (h *UserHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
@@ -59,7 +59,7 @@ func (h *UserHandler) GetByID(w http.ResponseWriter, r *http.Request) {
 // @Success      200   {object}  models.User
 // @Failure      400   {object}  map[string]string  "Invalid user ID or request body"
 // @Failure      500   {object}  map[string]string  "Failed to update user"
-// @Router       /api/users/{id} [put]
+// @Router       /admin/users/{id} [put]
 func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)
@@ -90,7 +90,6 @@ func (h *UserHandler) Update(w http.ResponseWriter, r *http.Request) {
 // @Tags         users
 // @Accept       json
 // @Produce      json
-// @Param        company_id  query     int  true   "Company ID"
 // @Param        limit       query     int  false  "Limit (default: 20)"
 // @Param        offset      query     int  false  "Offset (default: 0)"
 // @Success      200         {array}   models.User
@@ -125,7 +124,7 @@ func (h *UserHandler) List(w http.ResponseWriter, r *http.Request) {
 // @Success      204  "No Content"
 // @Failure      400  {object}  map[string]string  "Invalid user ID"
 // @Failure      500  {object}  map[string]string  "Failed to delete user"
-// @Router       /api/users/{id} [delete]
+// @Router       /admin/users/{id} [delete]
 func (h *UserHandler) Delete(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "id")
 	id, err := strconv.Atoi(idStr)

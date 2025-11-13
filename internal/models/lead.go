@@ -32,7 +32,6 @@ type Lead struct {
 	UpdatedAt time.Time `json:"updated_at"`
 	ProjectID int   `json:"project_id" gorm:"column:project_id;not null" example:"1"`
 	UserID    *int  `json:"user_id" gorm:"column:user_id"`
-	Project      Project  `json:"project" gorm:"foreignKey:ProjectID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
 	User      User  `json:"user" gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
 	Latitude  float64 `json:"latitude" gorm:"column:latitude;not null" example:"37.7749"`
 	Longitude float64 `json:"longitude" gorm:"column:longitude;not null" example:"-122.4194"`
@@ -40,9 +39,9 @@ type Lead struct {
 	PanelCount   int     `json:"panel_count" gorm:"column:panel_count" example:"30"`
 	HardwareType *string `json:"hardware_type" gorm:"column:hardware_type"`
 	KwhUsage     float64 `json:"kwh_usage" gorm:"column:kwh_usage" example:"12000"`
-	SalesRepEmail     *string `json:"sales_rep_email" gorm:"column:sales_rep_email"`
+	PanelId      int     `json:"panel_id" gorm:"column:panel_id" example:"1"`
+	InverterId   int     `json:"inverter_id" gorm:"column:inverter_id" example:"1"`
 	Consumption       []int   `json:"consumption" gorm:"-"`
-	LseId             int     `json:"lse_id" gorm:"column:lse_id"`
 	Period            string  `json:"period" gorm:"column:period"`
 	TargetSolarOffset int     `json:"target_solar_offset" gorm:"column:target_solar_offset"`
 	Mode              *string `json:"mode" gorm:"column:mode"`
